@@ -4,7 +4,7 @@ module.exports = {
   'db' : {
     'url' : (function() {
               if (this.debug) {
-                return 'mongodb://localhost/production'
+                return 'brew '
               } else {
                 return 'mongodb://localhost/test'
               }
