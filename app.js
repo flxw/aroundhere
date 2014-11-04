@@ -41,7 +41,7 @@ swig.setDefaults({ cache: false });
 
 // stylus setup ---------------------------------
 app.use(stylus.middleware({
-  src: __dirname + '/public/stylus',
+  src: __dirname + '/public/css',
   dest: __dirname + '/public/css',
   compile : function(str, path) {
     return stylus(str)
@@ -57,7 +57,7 @@ app.use(express.static(__dirname + '/public'))
 // routing --------------------------------------
 app.route('/')
   .get(function(req, res) {
-  res.render('index.html')
+    res.render('index.html')
   })
 
 
