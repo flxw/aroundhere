@@ -23,14 +23,14 @@ listText = listText.split('\n')
 dbclient = pymongo.MongoClient('localhost', 27017)
 db = dbclient.test
 db_monuments = db.monuments
-db_monumentCoordinates = db['monumentcoordinates']
+db_addresses = db['addresses']
 
 for i in range(0, len(listText)):
   currentLine = listText[i]
 
   if monumentIdExpression.match(currentLine):
     createdMonuments += 1
-    geocoded = []
+    geocodedAddresses = []
     monument = {
       'numericIdentifier' : int(currentLine),
       'addresses': [],
@@ -64,22 +64,23 @@ for i in range(0, len(listText)):
           print("The Geocoding API returned the following status: ", response["status"])
           continue
         else:
-          geocoded.append([
-            float(response['results'][0]['geometry']['location']['lat']),
-            float(response['results'][0]['geometry']['location']['lng'])
-          ])
+          geocodedAddresses.append({
+            'geolocation' : {
+              'type': 'Point',
+              'coordinates': [float(response['results'][0]['geometry']['location']['lat']), float(response['results'][0]['geometry']['location']['lng'])]
+            },
+            'formatted': response['results'][0]['formatted_address']
+          })
 
     monument_id = db_monuments.insert(monument)
     print('Inserted monument with id ', monument_id)
 
-    for geocode in geocoded:
-      db_monumentCoordinates.insert({
-        'location' : {
-          'type' : 'Point',
-          'coordinates' : geocode
-        },
+    for geocodedAddress in geocodedAddresses:
+      db_addresses.insert({
+        'geolocation' : geocodedAddress['geolocation'],
+        'formatted' : geocodedAddress['formatted'],
         'belongsToMonument' : monument_id
       })
-      print('Inserted geocode for monument ', monument_id)
+      print('Inserted geocode for monument ', monument_id, ' with address ', geocodedAddress['formatted'])
 
 denkmalliste.close
