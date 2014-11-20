@@ -5,19 +5,21 @@ xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
 xmlns:v="http://www.w3.org/2006/vcard/ns#"
 xmlns:owl="http://www.w3.org/2002/07/owl#" 
-xmlns:foaf="http://xmlns.com/foaf/0.1/" 
+xmlns:foaf="http:/^/xmlns.com/foaf/0.1/" 
 xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#"
-dbpedia-owl="http://dbpedia.org/ontology/">
+dbpedia-owl="http://dbpedia.org/ontology/"
+gndo="http://d-nb.info/standards/elementset/gnd">
 
 <rdf:Description
 rdf:about="http://domain/<denkmalid>">
+	<gndo:PlaceOrGeographicName> Name des Denkmals / dbpedia-Link</gndo:PlaceOrGeographicName>
 	<spot>
 		<rdf:Description>
 			<v:street-adress>Straße</v:street-adress>
 			<geo:lat> Latitude </geo:lat>
 			<geo:long> Longitude </geo:long>
-			<foaf:name> Name / dbpedia-Link </foaf:name>
-			<dbpedia-owl:yearOfConstruction> Baudatum </dbpedia-owl:yearOfConstruction>
+			<foaf:name> Name des Architekten / dbpedia-Link </foaf:name>  //optional
+			<dbpedia-owl:yearOfConstruction> Baudatum </dbpedia-owl:yearOfConstruction> //optional
 		</rdf:Description>
 	</spot>
 	...
