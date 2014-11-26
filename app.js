@@ -16,6 +16,8 @@ var stylus       = require('stylus')
 // ----------------------------------------------
 
 var config = require('./config.js');
+var routing = require('./routing.js')
+
 
 // configuration --------------------------------
 mongoose.connect(config.db.url)
@@ -55,10 +57,7 @@ app.use(express.static(__dirname + '/public'))
 
 
 // routing --------------------------------------
-app.route('/')
-  .get(function(req, res) {
-    res.render('index.html')
-  })
+routing.init(app)
 
 
 // launch ---------------------------------------

@@ -3,3 +3,5 @@ db/
 *.css
 .DS_Store
 aroundhere.sublime-workspace
+./idea/
+*.iml
