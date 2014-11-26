@@ -56,7 +56,6 @@ for i in range(0, len(listText)):
 
       if addressExpression.match(currentLine):
         address = addressExpression.match(currentLine).group(0)
-        monument['addresses'].append(address)
 
         if len(monument['addresses']) == 1:
           if descriptionExpression.findall(currentLine):
@@ -76,6 +75,7 @@ for i in range(0, len(listText)):
           print("The Geocoding API returned the following status: ", response["status"])
           continue
         else:
+          monument['addresses'].append(response['results'][0]['formatted_address'])
           geocodedAddresses.append({
             'geolocation' : {
               'type': 'Point',
@@ -83,6 +83,7 @@ for i in range(0, len(listText)):
             },
             'formatted': response['results'][0]['formatted_address']
           })
+
       elif subMonumentExpression.match(currentLine):
         subMonumentMatch = subMonumentExpression.match(currentLine).groups()
         monument['submonuments'].append(createSubMonument(subMonumentMatch[0], subMonumentMatch[1], subMonumentMatch[2]))
