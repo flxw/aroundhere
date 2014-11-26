@@ -16,9 +16,38 @@ def getMonumentStub():
 def createSubMonument(id, address, rest):
   submonument = getMonumentStub()
   submonument['numericIdentifier'] = id
-  submonument['addresses'] = address
   submonument['descriptionExpression'] = rest
-  return db_monuments.insert(submonument)
+  codedAddresses = []
+
+  time.sleep(0.4)
+
+  requString = geolocationUrl + urllib.parse.quote(address.replace(' ', '+') + ',+Berlin')
+  getReq     = urllib.request.urlopen(requString)
+  resp       = json.loads(getReq.read().decode('utf-8'))
+
+  if response["status"] != "OK":
+    print("Geocoding failed for: ", address)
+    print("The Geocoding API returned the following status: ", resp["status"])
+  else:
+    submonument['addresses'].append(response['results'][0]['formatted_address'])
+    codedAddresses.append({
+      'geolocation' : {
+        'type': 'Point',
+        'coordinates': [float(response['results'][0]['geometry']['location']['lat']), float(response['results'][0]['geometry']['location']['lng'])]
+      },
+      'formatted': response['results'][0]['formatted_address']
+    })
+
+  submonumentId = db_monuments.insert(submonument)
+
+  for codedAddress in geocodedAddresses:
+    db_addresses.insert({
+      'geolocation' : codedAddress['geolocation'],
+      'formatted' : codedAddress['formatted'],
+      'belongsToMonument' : submonumentId
+    })
+
+  return submonumentId
 
 addressExpression     = re.compile('^[A-Za-zßäöüÄÖÜ -]+ [0-9]+[A-Z]{0,1}')
 addressTextExpression = re.compile('^[A-Za-zßäöüÄÖÜ -]+ ')
