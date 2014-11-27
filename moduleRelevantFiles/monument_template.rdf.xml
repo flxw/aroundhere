@@ -11,20 +11,24 @@ dbpedia-owl='http://dbpedia.org/ontology/'
 dcterms:'http://purl.org/dc/terms/identifier'>
 
 <rdf:Description rdf:about='http://domain/<denkmalid>'>
-	<rdfs:label> Name des Denkmals / dbpedia-Link</rdfs:label>
-	<dcterms:identifier>Denkmal-ID</dcterms:identifier>
+	<rdfs:label>{{monument.description}}</rdfs:label>
+	<dcterms:identifier>{{monument.numericIdentifier}}</dcterms:identifier>
 	<dbpedia-owl:Architect> Name des Architekten / dbpedia-Link </dbpedia-owl:Architect>
 
 	<rdf:List>
+		{% for address in addresses %}
 		<geo:location>
-			<s:adress>Straße</s:adress>
-			<geo:lat> Latitude </geo:lat>
-			<geo:long> Longitude </geo:long>
-			<dbpedia-owl:yearOfConstruction> Baudatum </dbpedia-owl:yearOfConstruction> <!-- sofern gefunden -->
+			<s:adress>{{address.formatted}}</s:adress>
+			<geo:lat>{{address.geolocation.coordinates[0]}}</geo:lat>
+			<geo:long>{{address.geolocation.coordinates[1]}}</geo:long>
+			<dbpedia-owl:yearOfConstruction> Baudatum </dbpedia-owl:yearOfConstruction>
 		</geo:location>
+		{% endfor %}
 	</rdf:List>
 
-	<rdfs:seeAlso>	Link zu Bestandteilen </rdfs:seeAlso>
+	{% for submonument in monument.submonuments %}
+	<rdfs:seeAlso>	Monument with ID {{ submonument.numericIdentifier }}</rdfs:seeAlso>
+	{% endfor %}
 
 </rdf:Description>
 </rdf:RDF>
