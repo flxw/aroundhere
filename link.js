@@ -17,24 +17,44 @@ var wikiLinks = [
   "http://de.wikipedia.org/wiki/Liste_der_Kulturdenkmale_in_Berlin-Mitte/Stralauer_Vorstadt"
 ]
 
-var linkData = function(){
+var linkData = function(id){
+  var sites = {}
   wikiLinks.forEach(function(entry){
-    console.log(entry)
-    crawlURL(entry)
+    crawlURL(entry, getLinkForId, id)
   })
+
+  //getLinkForId(id, sites)
+
 }
 
-function crawlURL(url){
-  var client = http.createClient(80, url);
-  request = client.request();
-  request.on('response', function( res ) {
-      res.on('data', function( data ) {
-          console.log( data );
-      } );
-  } );
-  request.end();
+function crawlURL(url, callback, id){
+  http.get(url, function(res) {
+    var data = "";
+    res.on('data', function (chunk) {
+      data += chunk;
+
+    });
+    res.on("end", function() {
+      callback(id, url, data);
+    });
+  }).on("error", function() {
+    //Error case
+  });
 }
 
+function getLinkForId(id, url, html){
+    var index = html.search(id)
 
+    if(index > -1) {
+      var startIndex = html.indexOf("href", index)
+
+      var endIndex = html.indexOf('\"', startIndex + 6)
+
+      var link = html.substring(startIndex + 6, endIndex)
+      console.log(link)
+    }
+
+
+}
 
 exports.linkData = linkData
