@@ -1,19 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link rel='stylesheet' type='text/css' href='css/main.css'></style>
+  <script type='text/javascript' src='/vendor/angular/angular.min.js'></script>
+  <script type='text/javascript' src='/vendor/angular-route/angular-route.min.js'></script>
+  <script type='text/javascript' src='/vendor/ngGeolocation/ngGeolocation.js'></script>
 </head>
 
-<body ng-app='aroundhere' ng-controller='GeolocationController'>
-  <div id='headLine'>AroundHere</div>
-  <div id='googleMap'></div>
-  <p>{{myCoords}}</p>
-  <p>{{myError}}</p>
+<body ng-app='aroundhere'>
 
-  <!--<script type='text/javascript' src='http://maps.googleapis.com/maps/api/js?key=AIzaSyAYfnpR4oWhEB6dnCb2Qr2puVPjsLt8j2I&sensor=false'></script>
-  <script type='text/javascript' src='/vendor/angular-route/angular-route.min.js'></script>-->
-  <script type='text/javascript' src='/vendor/angular/angular.min.js'></script>
-  <script type='text/javascript' src='/vendor/ngGeolocation/ngGeolocation.min.js'></script>
+  <div ng-view></div>
+  <!--<script type='text/javascript' src='http://maps.googleapis.com/maps/api/js?key=AIzaSyAYfnpR4oWhEB6dnCb2Qr2puVPjsLt8j2I&sensor=false'></script>-->
   <script type='text/javascript' src='/js/aroundhere.js'></script>
 </body>
 </html>

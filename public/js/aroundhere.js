@@ -34,27 +34,33 @@ function initialize() {
 
 google.maps.event.addDomListener(window, 'load', initialize)*/
 
-var app = angular.module('aroundhere', ['ngGeolocation'])
 
-/*app.config(['$routeProvider', function($routeProvider) {
+var app = angular.module('aroundhere', ['ngGeolocation', 'ngRoute'])
+
+app.controller('GeolocationController', ['$geolocation', '$scope', function($geolocation, $scope) {
+    $scope.myCoords = 'wasd';
+
+    $geolocation.getCurrentPosition().then(
+      function(p) {
+        $scope.myCoords = JSON.stringify(p)
+        $scope.myError = $geolocation.position.error; // this becomes truthy, and has 'code' and 'message' if an error occurs
+      }).catch(function(e) {
+        console.log(e)
+      })
+    /*$geolocation.watchPosition({
+      timeout: 60000,
+      maximumAge: 5000,
+      enableHighAccuracy: true
+    });*/
+  }])
+
+app.config(['$routeProvider', function($routeProvider) {
   $routeProvider
     .when('/', {
-      controller:  'LoginController',
-      templateUrl: '...'
+      controller:  'GeolocationController',
+      templateUrl: '/js/views/index.html'
     })
     .otherwise({
       redirectTo: '/'
     })
-}])*/
-
-app
-  .controller('GeolocationController', ['$geolocation', '$scope', function($geolocation, $scope) {
-    $geolocation.watchPosition({
-      timeout: 60000,
-      maximumAge: 250,
-      enableHighAccuracy: true
-    });
-
-    $scope.myCoords = $geolocation.position.coords; // this is regularly updated
-    $scope.myError = $geolocation.position.error; // this becomes truthy, and has 'code' and 'message' if an error occurs
-  }])
+}])
