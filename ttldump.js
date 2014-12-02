@@ -5,7 +5,7 @@ var config       = require('./config.js')
 var Monument     = require('./models/monument.js')
 var Address      = require('./models/address.js')
 var swig         = require('swig')
-var rdfTemplate  = swig.compileFile('moduleRelevantFiles/monument_template.rdf.xml')
+var rdfTemplate  = swig.compileFile('moduleRelevantFiles/monument_template.ttl')
 
 mongoose.connect(config.db.url)
 
