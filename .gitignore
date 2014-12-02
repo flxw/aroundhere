@@ -5,3 +5,4 @@ db/
 aroundhere.sublime-workspace
 .idea/
 *.iml
+public/vendor
