@@ -11,10 +11,14 @@ angular.module('aroundhere').controller('CurrentlocationController', ['$geolocat
     })
 
     function handlePositionUpdate(event,position) {
-      console.log('UPDATED POSITION', x)
+      console.log('UPDATED POSITION', position)
+      $scope.myCoords = position
       var pos = new google.maps.LatLng(position.coords.latitude, position.coords.longitude)
 
-      var marker = new google.maps.Marker({
+      map.setCenter(pos)
+
+      marker.setMap(null)
+      marker = new google.maps.Marker({
         position: pos,
         map: map
       })
@@ -23,7 +27,7 @@ angular.module('aroundhere').controller('CurrentlocationController', ['$geolocat
     $scope.$on('$geolocation.position.changed', handlePositionUpdate)
 
     // google map part --------------------------
-    var map
+    var map, marker
 
     function initializeMap() {
       var mapProp = {
@@ -32,7 +36,12 @@ angular.module('aroundhere').controller('CurrentlocationController', ['$geolocat
         mapTypeId:google.maps.MapTypeId.ROADMAP
       }
 
-      map = new google.maps.Map(document.getElementById("googleMap"), mapProp)
+      map = new google.maps.Map(document.getElementById("google-map"), mapProp)
+
+      marker = new google.maps.Marker({
+        position: new google.maps.LatLng(52.521918,13.413215),
+        map: map
+      })
     }
 
     google.maps.event.addDomListener(window, 'load', initializeMap)
