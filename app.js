@@ -3,7 +3,6 @@
 var express  = require('express')
 var app      = express()
 var port     = process.env.PORT || 8080
-var mongoose = require('mongoose')
 var swig     = require('swig')
 
 // connect middlewares
@@ -18,9 +17,6 @@ var stylus       = require('stylus')
 var config = require('./config.js');
 var routing = require('./routing.js')
 
-
-// configuration --------------------------------
-mongoose.connect(config.db.url)
 
 // set up express
 if (config.debug) {
