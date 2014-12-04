@@ -15,7 +15,10 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.5 r10040"
-   sodipodi:docname="base-inkscape.svg">
+   sodipodi:docname="base-inkscape.svg"
+   inkscape:export-filename="/home/felix/Documents/University/WS2014/Linked Data/aroundhere/mockups/base-inkscape.png"
+   inkscape:export-xdpi="45"
+   inkscape:export-ydpi="45">
   <defs
      id="defs4">
     <filter
@@ -394,8 +397,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.7"
-     inkscape:cx="227.88802"
-     inkscape:cy="768.96799"
+     inkscape:cx="202.88802"
+     inkscape:cy="311.82513"
      inkscape:document-units="px"
      inkscape:current-layer="layer2"
      showgrid="false"
@@ -427,7 +430,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -619,5 +622,28 @@
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#00bfa5;fill-opacity:1;font-family:NeoSansW01;-inkscape-font-specification:NeoSansW01"
          id="flowPara4546">Klosterstraße,</flowPara><flowPara
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#00bfa5;fill-opacity:1;font-family:NeoSansW01;-inkscape-font-specification:NeoSansW01"
-         id="flowPara4441-8">Bertolt-Brecht-Platz</flowPara></flowRoot>  </g>
+         id="flowPara4441-8">Bertolt-Brecht-Platz</flowPara></flowRoot>    <path
+       sodipodi:type="arc"
+       style="color:#000000;fill:#00bfa5;fill-opacity:1;stroke:#ffffff;stroke-width:1;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="path3108"
+       sodipodi:cx="667.85712"
+       sodipodi:cy="1177.8572"
+       sodipodi:rx="72.14286"
+       sodipodi:ry="70.714287"
+       d="m 606.42065,1214.9257 a 72.14286,70.714287 0 1 1 2.0362,3.0622"
+       sodipodi:start="2.5898161"
+       sodipodi:end="8.8213055"
+       sodipodi:open="true" />
+    <text
+       xml:space="preserve"
+       style="font-size:56px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:NeoSansW01;-inkscape-font-specification:NeoSansW01"
+       x="650.85712"
+       y="1198.8571"
+       id="text3110"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3112"
+         x="650.85712"
+         y="1198.8571">R</tspan></text>
+  </g>
 </svg>
