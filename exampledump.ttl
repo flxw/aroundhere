@@ -7,20 +7,32 @@
 @prefix  dbpedia-owl: 	<http://dbpedia.org/ontology/> .
 @prefix  dcterms: 		<http://purl.org/dc/terms/identifier> .
 
-<http://aroundhere.flxw.de/{{numericIdentifier}}>
-	rdfs:Label 						{{monument.description}} ;
-	dcterms:identifier		{{monument.numericIdentifier}} ;
+<http://aroundhere.flxw.de/>
+	rdfs:Label 						 ;
+	dcterms:identifier		9010160 ;
 	dbpedia-owl:Architect	"Name des Architekten" bzw. <dn-pedia-Link> ;
 
-	{% for address in addresses %}
+	
 		geo:Location [
-			s:adress 	{{address.formatted}} ;
-			geo:lat 	{{address.geolocation.coordinates[0]}} ;
-			geo:long	{{address.geolocation.coordinates[1]}} ;
+			s:adress 	Veteranenstraße 11, 10119 Berlin, Germany ;
+			geo:lat 	52.5331524 ;
+			geo:long	13.4018063 ;
 			dbpedia-owl:yearOfConstruction 	"Baudatum"
 		] .
-	{% endfor %}
+	
+		geo:Location [
+			s:adress 	Veteranenstraße 11, 10119 Berlin, Germany ;
+			geo:lat 	52.5331524 ;
+			geo:long	13.4018063 ;
+			dbpedia-owl:yearOfConstruction 	"Baudatum"
+		] .
+	
+		geo:Location [
+			s:adress 	Veteranenstraße 11, 10119 Berlin, Germany ;
+			geo:lat 	52.5331524 ;
+			geo:long	13.4018063 ;
+			dbpedia-owl:yearOfConstruction 	"Baudatum"
+		] .
+	
 
-	{% for submonument in monument.submonuments %}
-		rdfs:seeAlso	{{ submonument.numericIdentifier }} ;
-	{% endfor %}
+	

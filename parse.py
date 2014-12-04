@@ -7,7 +7,7 @@ import pymongo
 
 def getMonumentStub():
   return  {
-    'numericIdentifier' :-1,
+    '_id' : '-1',
     'addresses': [],
     'description' : '',
     'submonuments': []
@@ -15,7 +15,7 @@ def getMonumentStub():
 
 def createSubMonument(id, address, rest):
   submonument = getMonumentStub()
-  submonument['numericIdentifier'] = id
+  submonument['_id'] = id
   submonument['descriptionExpression'] = rest
   codedAddresses = []
 
@@ -30,24 +30,16 @@ def createSubMonument(id, address, rest):
     print("The Geocoding API returned the following status: ", resp["status"])
   else:
     submonument['addresses'].append(response['results'][0]['formatted_address'])
-    codedAddresses.append({
+    db_addresses.save({
       'geolocation' : {
         'type': 'Point',
         'coordinates': [float(response['results'][0]['geometry']['location']['lat']), float(response['results'][0]['geometry']['location']['lng'])]
       },
-      'formatted': response['results'][0]['formatted_address']
+      '_id': response['results'][0]['formatted_address'],
+      'belongsToMonument' : submonument['_id']
     })
 
-  submonumentId = db_monuments.insert(submonument)
-
-  for codedAddress in geocodedAddresses:
-    db_addresses.insert({
-      'geolocation' : codedAddress['geolocation'],
-      'formatted' : codedAddress['formatted'],
-      'belongsToMonument' : submonumentId
-    })
-
-  return submonumentId
+  return submonument['_id']
 
 addressExpression     = re.compile('^[A-Za-zßäöüÄÖÜ -]+ [0-9]+[A-Z]{0,1}')
 addressTextExpression = re.compile('^[A-Za-zßäöüÄÖÜ -]+ ')
@@ -75,9 +67,8 @@ for i in range(0, len(listText)):
 
   if monumentIdExpression.match(currentLine):
     createdMonuments += 1
-    geocodedAddresses = []
     monument = getMonumentStub()
-    monument['numericIdentifier'] = int(currentLine)
+    monument['_id'] = currentLine
 
     while (i < len(listText) and listText[i] != ''):
       i += 1
@@ -90,7 +81,6 @@ for i in range(0, len(listText)):
           if descriptionExpression.findall(currentLine):
             monument['description'] = descriptionExpression.findall(currentLine)[0]
           else:
-            print('FAILED TO EXTRACT DESCRIPTION FROM: ' +  currentLine)
             failedDescriptionExtractions+=1
 
         time.sleep(0.4)
@@ -105,27 +95,22 @@ for i in range(0, len(listText)):
           continue
         else:
           monument['addresses'].append(response['results'][0]['formatted_address'])
-          geocodedAddresses.append({
+          db_addresses.save({
+            '_id': response['results'][0]['formatted_address'],
             'geolocation' : {
               'type': 'Point',
               'coordinates': [float(response['results'][0]['geometry']['location']['lat']), float(response['results'][0]['geometry']['location']['lng'])]
             },
-            'formatted': response['results'][0]['formatted_address']
+            'belongsToMonument' : monument['_id']
           })
-
       elif subMonumentExpression.match(currentLine):
         subMonumentMatch = subMonumentExpression.match(currentLine).groups()
         monument['submonuments'].append(createSubMonument(subMonumentMatch[0], subMonumentMatch[1], subMonumentMatch[2]))
 
-    monument_id = db_monuments.insert(monument)
+    monument_id = db_monuments.save(monument)
 
-    for geocodedAddress in geocodedAddresses:
-      db_addresses.insert({
-        'geolocation' : geocodedAddress['geolocation'],
-        'formatted' : geocodedAddress['formatted'],
-        'belongsToMonument' : monument_id
-      })
+    print('Creating monument' , createdMonuments, end='\r')
 
-    print(createdMonuments, 'created monuments', end='\r')
+print('Failed to extract', failedDescriptionExtractions, 'descriptions')
 
 denkmalliste.close
