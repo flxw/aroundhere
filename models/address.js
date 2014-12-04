@@ -3,10 +3,10 @@ var mongoose = require('mongoose');
 var addressSchema = new mongoose.Schema({
   geolocation: {
     type: { type: String, default: 'Point' },
-    coordinates: {type:[Number], index '2dsphere'}
+    coordinates: {type:[Number], index: '2dsphere'}
   },
   formatted: String,
-  belongsToMonument: { type: mongoose.Schema.Types.ObjectId, ref: 'Monument' }
+  belongsToMonument: { type: mongoose.Schema.Types.String, ref: 'Monument' }
 });
 
 module.exports = mongoose.model('Address', addressSchema);
