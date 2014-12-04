@@ -17,14 +17,20 @@ var init = function(app){
   })
 
     app.get("/backend/monuments/", function(req, res){
-        var answer = db.handleRequest(res, dbCallback)
+        var data = req.query
+        console.log(data)
+        var answer = db.handleRequest(res, "nearby", data, dbCallback)
     })
 }
 
 var dbCallback = function(_res, err, docs){
-
     _res.set('Content-Type', 'application/json')
     _res.send(JSON.stringify(docs))
+}
+
+var rdfCallbacl = function(_res, err, rdf){
+    _res.set('Content-Type', 'application/x-turtle')
+    _res.send(rdf)
 }
 
 

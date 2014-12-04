@@ -8,11 +8,47 @@ var monument = require('./models/monument.js')
 // configuration --------------------------------
 mongoose.connect(config.db.url)
 
-var handleRequest = function(res, callback){
-    monument.find({}, function(err, docs){
-        callback(res, err, docs)
-    })
+
+var requests = {
+    nearby: function(data, callback, res){
+        address
+            .find({geolocation: {$near : {$geometry: {type:'Point', coordinates: [parseFloat(data.lat),parseFloat(data.long)]}, $maxDistance: parseFloat(data.distance)}}})
+            .populate('belongsToMonument')
+            .exec(function(err, docs){
+                callback(res, err, docs)
+
+            })
+    }
 }
 
+var requestData = {
+    nearby:{
+        lat: null,
+        long: null,
+        distance: 1000
+    }
+}
+
+var handleRequest = function(res, request, data, callback){
+    var dataValid = confirmData(data, request)
+    if(dataValid)
+        requests[request](data, callback, res)
+    else
+        callback(res, null, {error: "Some arguments in your request were missing!"})
+
+}
+
+var confirmData = function(data, request){
+    for(key in requestData[request]){
+        if(!(key in data) )
+            if(! (requestData[request][key] === null) )
+                data[key] = requestData[request][key]
+            else
+                return false
+
+    }
+    return true
+
+}
 
 exports.handleRequest = handleRequest
