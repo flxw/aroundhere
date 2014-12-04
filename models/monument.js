@@ -3,8 +3,8 @@ var mongoose = require('mongoose');
 var monumentSchema = new mongoose.Schema({
   _id: String,
   description: String,
-  addresses : [String],
-  submonuments : [{ type: mongoose.Schema.Types.String, ref: 'Monument' }],
+  addresses : [{type: String, ref: 'Address'}],
+  submonuments : [{ type: String, ref: 'Monument' }],
   dbpedia_link : String
 });
 
