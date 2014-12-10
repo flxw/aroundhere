@@ -1,4 +1,3 @@
-var linkData = require("./link.js")
 var db = require("./db.js")
 var modUrl = require("url")
 
@@ -19,7 +18,14 @@ var init = function(app){
     app.get("/backend/monuments/", function(req, res){
         var data = req.query
         console.log(data)
-        var answer = db.handleRequest(res, "nearby", data, dbCallback)
+        db.handleRequest(res, "nearby", data, dbCallback)
+    })
+
+    app.get("/monument/*", function(req, res){
+        var url = modUrl.parse(req.url)
+        var routeElem = getRoutes(url.pathname)
+        var id = routeElem[routeElem.length-1]
+        db.handleRequest(res, "monument", {monumentId: id}, dbCallback)
     })
 }
 
