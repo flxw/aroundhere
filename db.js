@@ -1,6 +1,7 @@
 var mongoose = require('mongoose')
 var config = require('./config.js');
 var linkData = require("./link.js")
+var rdf = require("./moduleRDF.js")
 
 //models ----------------------------------------
 var address = require('./models/address.js')
@@ -20,10 +21,21 @@ var requests = {
 
             })
     },
-    monument: function(data, callback, res){
-        linkData.linkData(data.monumentId, function(data){
-            callback(res, null, data)
+    monument: function(reqData, callback, res){
+        linkData.linkData(reqData.monumentId, function(data){
+            console.log(reqData.monumentId)
+            monument
+                .find({_id: reqData.monumentId})
+                .populate('addresses')
+                .exec(function(err, docs){
 
+                    for(var key in docs[0]){
+                       data[key] = docs[0][key]
+                    }
+                    console.log(data)
+                    data = rdf.creatRDF(data)
+                    callback(res, null, data)
+                })
         })
 
     }

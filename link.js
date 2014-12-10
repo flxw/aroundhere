@@ -1,6 +1,8 @@
 var http = require('http');
 
 var wikiLinks = [
+
+  "http://de.wikipedia.org/wiki/Liste_der_Kulturdenkmale_in_Berlin-Charlottenburg",
   "http://de.wikipedia.org/wiki/Liste_der_Kulturdenkmale_in_Berlin-Mitte",
   "http://de.wikipedia.org/wiki/Liste_der_Kulturdenkmale_in_Berlin-Mitte/Alexanderplatz",
   "http://de.wikipedia.org/wiki/Liste_der_Kulturdenkmale_in_Berlin-Mitte/Alt-Berlin",
@@ -41,8 +43,8 @@ function crawlURL(url, callback, id, topCallback){
   });
 }
 
-var regIds  = /id="\d{8}/g
-var regImages = /src=".*\.jpg"/g
+var regIds  = /<td rowspan.*id="\d{8}/g
+var regImages = /src=".*\.jpg"/gi
 
 function getLinkForId(id, url, html, topCallback){
     var index = html.search(id)
@@ -69,9 +71,7 @@ exports.linkData = linkData
 // private -------------------------------------------------------
 
 var getImageForId = function(id, html){
-  console.log(html)
   var images = html.match(regImages)
-  console.log(images)
   for(var i=0; i<images.length; i++){
     images[i] = images[i].slice(7)
     images[i] = "http://"+images[i].slice(0,images[i].length-1)
@@ -85,12 +85,14 @@ var getImageForId = function(id, html){
 var getNextId = function(id, html){
   var ids = html.match(regIds)
   var idFound = false
-  var nextId = null
-  ids.forEach(function(curId){
+
+  for(var i=0; i<ids.length; i++){
+    var curId = ids[i]
     if(idFound)
-      nextId = curId.slice(4)
-    if(curId.slice(4) == id)
+      return curId //.slice(26)
+    if(curId.match(/\d{8}/) == id){
       idFound = true
-  })
-  return nextId
+    }
+
+  }
 }

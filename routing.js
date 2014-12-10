@@ -25,7 +25,7 @@ var init = function(app){
         var url = modUrl.parse(req.url)
         var routeElem = getRoutes(url.pathname)
         var id = routeElem[routeElem.length-1]
-        db.handleRequest(res, "monument", {monumentId: id}, dbCallback)
+        db.handleRequest(res, "monument", {monumentId: id}, rdfCallback)
     })
 }
 
@@ -34,8 +34,8 @@ var dbCallback = function(_res, err, docs){
     _res.send(JSON.stringify(docs))
 }
 
-var rdfCallbacl = function(_res, err, rdf){
-    _res.set('Content-Type', 'application/x-turtle')
+var rdfCallback = function(_res, err, rdf){
+    _res.set('Content-Type', "text/plain")//'application/x-turtle')
     _res.send(rdf)
 }
 
