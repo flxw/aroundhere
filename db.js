@@ -14,7 +14,7 @@ mongoose.connect(config.db.url)
 var requests = {
     nearby: function(data, callback, res){
         address
-            .find()//{geolocation: {$near : {$geometry: {type:'Point', coordinates: [parseFloat(data.lat),parseFloat(data.long)]}, $maxDistance: parseFloat(data.distance)}}})
+            .find({geolocation: {$near : {$geometry: {type:'Point', coordinates: [parseFloat(data.latitude),parseFloat(data.longitude)]}, $maxDistance: parseFloat(data.distance)}}})
             .populate('belongsToMonument')
             .exec(function(err, docs){
                 callback(res, err, docs)
@@ -33,7 +33,8 @@ var requests = {
                        data[key] = docs[0][key]
                     }
                     console.log(data)
-                    data = rdf.creatRDF(data)
+                    if(reqData.type == 'rdf')
+                        data = rdf.creatRDF(data)
                     callback(res, null, data)
                 })
         })
@@ -44,12 +45,13 @@ var requests = {
 //Values that equal null are mandatory fields for the request
 var requestData = {
     nearby:{
-        lat: null,
-        long: null,
+        latitude: null,
+        longitude: null,
         distance: 1000
     },
     monument:{
-        monumentId: null
+        monumentId: null,
+        type: "rdf"
     }
 
 }
@@ -64,7 +66,7 @@ var handleRequest = function(res, request, data, callback){
 }
 
 var confirmData = function(data, request){
-    for(key in requestData[request]){
+    for(var key in requestData[request]){
         if(!(key in data) )
             if(! (requestData[request][key] === null) )
                 data[key] = requestData[request][key]

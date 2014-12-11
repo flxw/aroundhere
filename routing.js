@@ -15,7 +15,7 @@ var init = function(app){
       res.send("Everything is fine")
   })
 
-    app.get("/backend/monuments/", function(req, res){
+    app.get("/getNearMonuments", function(req, res){
         var data = req.query
         console.log(data)
         db.handleRequest(res, "nearby", data, dbCallback)
@@ -25,7 +25,9 @@ var init = function(app){
         var url = modUrl.parse(req.url)
         var routeElem = getRoutes(url.pathname)
         var id = routeElem[routeElem.length-1]
-        db.handleRequest(res, "monument", {monumentId: id}, rdfCallback)
+        var data = req.query
+        data.monumentId = id
+        db.handleRequest(res, "monument", data, rdfCallback)
     })
 }
 
