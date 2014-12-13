@@ -1,12 +1,9 @@
 <div class='card' ng-repeat='monument in monuments'>
-  <div class='title'>{{monument.name}}</div>
+  <div class='title'>{{monument._id}}</div>
 </div>
 
-<div id='action-button' class='fab red'>
-  <core-icon icon='search' aria-label='search' role='img'>
-    <svg viewBox='0 0 24 24' height='100%' width='100%' preserveAspectRatio='xMidYMid meet' fit='' style='pointer-events: none; display: block;'>
-      <g><path d='M19 13h-6v6h-2v-6h-6v-2h6v-6h2v6h6v2z'></path></g>
-    </svg>
-  </core-icon>
-  <paper-ripple class='circle recenteringTouch' fit=''></paper-ripple>
+<div id='action-button' class='fab red' ng-click='lookForNearbyMonuments()'>
+  <core-icon icon='search' aria-label='search' role='img' ng-show='!isLoading'></core-icon>
+
+  <core-icon icon='more-horiz' aria-label='more-horiz' role='img' ng-show='isLoading'></core-icon>
 </div>

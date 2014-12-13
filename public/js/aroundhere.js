@@ -8,7 +8,7 @@ app.config(['$routeProvider', function($routeProvider) {
       controller:  'MonumentsController',
       templateUrl: '/js/views/monuments.html'
     })
-    .when('/monument', {
+    .when('/monument/:monumentId', {
       controller:  'MonumentDetailController',
       templateUrl: '/js/views/monumentdetail.html'
     })
