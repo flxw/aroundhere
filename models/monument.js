@@ -1,12 +1,11 @@
-var mongoose = require('mongoose');
+var mongoose = require('mongoose')
 
 var monumentSchema = new mongoose.Schema({
   _id: String,
   description: String,
-  addresses : [{type: String, ref: 'Address'}],
-  submonuments : [{ type: String, ref: 'Monument' }],
-  dbpedia_link : String
-});
+  addresses : [{type: mongoose.Schema.Types.ObjectId, ref: 'Address'}],
+  submonuments : [{ type: String, ref: 'Monument' }]
+})
 
-module.exports = mongoose.model('Monument', monumentSchema);
+module.exports = mongoose.model('Monument', monumentSchema)
 

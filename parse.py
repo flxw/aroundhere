@@ -5,42 +5,6 @@ import time
 import json
 import pymongo
 
-def getMonumentStub():
-  return  {
-    '_id' : '-1',
-    'addresses': [],
-    'description' : '',
-    'submonuments': []
-  }
-
-def createSubMonument(id, address, rest):
-  submonument = getMonumentStub()
-  submonument['_id'] = id
-  submonument['descriptionExpression'] = rest
-  codedAddresses = []
-
-  time.sleep(0.4)
-
-  requString = geolocationUrl + urllib.parse.quote(address.replace(' ', '+') + ',+Berlin')
-  getReq     = urllib.request.urlopen(requString)
-  resp       = json.loads(getReq.read().decode('utf-8'))
-
-  if response["status"] != "OK":
-    print("Geocoding failed for: ", address)
-    print("The Geocoding API returned the following status: ", resp["status"])
-  else:
-    submonument['addresses'].append(response['results'][0]['formatted_address'])
-    db_addresses.save({
-      'geolocation' : {
-        'type': 'Point',
-        'coordinates': [float(response['results'][0]['geometry']['location']['lat']), float(response['results'][0]['geometry']['location']['lng'])]
-      },
-      '_id': response['results'][0]['formatted_address'],
-      'belongsToMonument' : submonument['_id']
-    })
-
-  return submonument['_id']
-
 addressExpression     = re.compile('^[A-Za-zßäöüÄÖÜ -]+ [0-9]+[A-Z]{0,1}')
 addressTextExpression = re.compile('^[A-Za-zßäöüÄÖÜ -]+ ')
 descriptionExpression = re.compile('[a-zA-ZäöüÄÖÜ]{3,}[„“()-., a-zA-ZäöüÄÖÜ1-9?/]*$')
@@ -49,7 +13,59 @@ subMonumentExpression = re.compile('^([0-9]{8}) - ([A-Za-zßäöüÄÖÜ -]+ [0-
 
 createdMonuments = 0
 failedDescriptionExtractions = 0
+lookedUpAdresses = 0
 geolocationUrl = 'https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyAYfnpR4oWhEB6dnCb2Qr2puVPjsLt8j2I&address='
+
+def getMonumentStub():
+  return  {
+    '_id' : '-1',
+    'addresses': [],
+    'description' : '',
+    'submonuments': []
+  }
+
+def lookupCoordinatesFor(address):
+  global lookedUpAdresses
+  time.sleep(0.4)
+  lookedUpAdresses += 1
+  requString = geolocationUrl + urllib.parse.quote(address.replace(' ', '+') + ',+Berlin')
+  getReq     = urllib.request.urlopen(requString)
+  response   = json.loads(getReq.read().decode('utf-8'))
+
+  if response["status"] != "OK":
+    print("Geocoding failed for: ", address)
+    print("The Geocoding API returned the following status: ", response["status"])
+    return None
+  else:
+    return response
+
+def createSubMonument(id, address, rest):
+  global createdMonuments
+  createdMonuments += 1
+  submonument = getMonumentStub()
+  submonument['_id'] = id
+  submonument['description'] = rest
+  codedAddresses = []
+
+  codedAddress = lookupCoordinatesFor(address)
+
+  if codedAddress == None:
+    print('ALARRRRRM')
+  else:
+    addressId = db_addresses.save({
+      'geolocation' : {
+        'type': 'Point',
+        'coordinates': [float(codedAddress['results'][0]['geometry']['location']['lat']), float(codedAddress['results'][0]['geometry']['location']['lng'])]
+      },
+      'formatted': codedAddress['results'][0]['formatted_address'],
+      'belongsToMonument' : submonument['_id']
+    })
+
+    submonument['addresses'].append(addressId)
+
+  return db_monuments.save(submonument)
+
+#################################################
 
 denkmalliste = open('denkmalliste.txt')
 listText = denkmalliste.read()
@@ -73,6 +89,7 @@ for i in range(0, len(listText)):
     while (i < len(listText) and listText[i] != ''):
       i += 1
       currentLine = listText[i]
+      print('Monument count:' , createdMonuments, ' | Geocoded Adresses:', lookedUpAdresses, end='\r')
 
       if addressExpression.match(currentLine):
         address = addressExpression.match(currentLine).group(0)
@@ -83,33 +100,27 @@ for i in range(0, len(listText)):
           else:
             failedDescriptionExtractions+=1
 
-        time.sleep(0.4)
+        response = lookupCoordinatesFor(address)
 
-        requestString = geolocationUrl + urllib.parse.quote(address.replace(' ', '+') + ',+Berlin')
-        getRequest    = urllib.request.urlopen(requestString)
-        response      = json.loads(getRequest.read().decode('utf-8'))
-
-        if response["status"] != "OK":
-          print("Geocoding failed for: ", address)
-          print("The Geocoding API returned the following status: ", response["status"])
-          continue
+        if response == None:
+          print('ALARRRRM 2')
+          break
         else:
-          monument['addresses'].append(response['results'][0]['formatted_address'])
-          db_addresses.save({
-            '_id': response['results'][0]['formatted_address'],
+          addressId = db_addresses.save({
+            'formatted': response['results'][0]['formatted_address'],
             'geolocation' : {
               'type': 'Point',
               'coordinates': [float(response['results'][0]['geometry']['location']['lat']), float(response['results'][0]['geometry']['location']['lng'])]
             },
             'belongsToMonument' : monument['_id']
           })
+          monument['addresses'].append(addressId)
       elif subMonumentExpression.match(currentLine):
         subMonumentMatch = subMonumentExpression.match(currentLine).groups()
         monument['submonuments'].append(createSubMonument(subMonumentMatch[0], subMonumentMatch[1], subMonumentMatch[2]))
 
     monument_id = db_monuments.save(monument)
 
-    print('Creating monument' , createdMonuments, end='\r')
 
 print('Failed to extract', failedDescriptionExtractions, 'descriptions')
 

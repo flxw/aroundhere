@@ -1,12 +1,12 @@
-var mongoose = require('mongoose');
+var mongoose = require('mongoose')
 
 var addressSchema = new mongoose.Schema({
-  _id: String,
+  formatted: String,
   geolocation: {
     type: { type: String, default: 'Point' },
     coordinates: {type:[Number], index: '2dsphere'}
   },
   belongsToMonument: { type: String, ref: 'Monument' }
-});
+})
 
-module.exports = mongoose.model('Address', addressSchema);
+module.exports = mongoose.model('Address', addressSchema)
