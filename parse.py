@@ -4,6 +4,7 @@ import urllib.parse
 import time
 import json
 import pymongo
+import sys
 
 addressExpression     = re.compile('^[A-Za-zßäöüÄÖÜ -]+ [0-9]+[A-Z]{0,1}')
 addressTextExpression = re.compile('^[A-Za-zßäöüÄÖÜ -]+ ')
@@ -67,16 +68,15 @@ def createSubMonument(id, address, rest):
 
 #################################################
 
-denkmalliste = open('denkmalliste.txt')
+denkmalliste = open(sys.argv[1])
 listText = denkmalliste.read()
 
-listText.replace('\r', '')
 listText = listText.split('\n')
 
 dbclient = pymongo.MongoClient('localhost', 27017)
 db = dbclient.test
 db_monuments = db.monuments
-db_addresses = db['addresses']
+db_addresses = db.addresses
 
 for i in range(0, len(listText)):
   currentLine = listText[i]
