@@ -1,5 +1,9 @@
-<div class='card' ng-repeat='monument in monuments'>
-  <div class='title'>{{monument._id}}</div>
+<div class='card' ng-repeat='monument in monuments' ng-click='showMonumentDetails($index)'>
+  <img src='{{monument.image}}'>
+  <div class='description'>
+    <h2>{{monument._id}}</h2>
+    <p>{{monument.description}}</p>
+  </div>
 </div>
 
 <div id='action-button' class='fab red' ng-click='lookForNearbyMonuments()'>

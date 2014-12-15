@@ -10,7 +10,6 @@ angular.module('aroundhere').controller('CurrentlocationController', ['$geolocat
   $scope.$on('$geolocation.position.changed', handlePositionUpdate)
 
   function handlePositionUpdate(event,position) {
-    console.log('CurrentlocationController: UPDATED POSITION', position)
     map.setCurrentPosition(position.coords.latitude, position.coords.longitude)
   }
 }])

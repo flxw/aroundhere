@@ -11,6 +11,9 @@ html, body
   -webkit-touch-callout none
   font-family RobotoDraft, 'Helvetica Neue', Helvetica, Arial
 
+.hidden
+  display:none
+
 #currentlocation-container
   position relative
   width 100%
@@ -160,6 +163,15 @@ section
 
 .card
   margin-bottom 1em
+  clear both
+
+  & > img
+    max-height 10em
+    max-width 20%
+  & > .description
+    float right
+    width 70%
+    margin 0% 5%
 
 .dialog
   box-sizing border-box

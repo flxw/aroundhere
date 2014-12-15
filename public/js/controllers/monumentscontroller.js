@@ -2,7 +2,9 @@ angular.module('aroundhere').controller('MonumentsController', ['$scope', '$http
   $scope.isLoading = false
   $scope.monuments = [
     {
-      name: 'Activate the action button to see monuments around you!'
+      _id: 'Activate the action button to see monuments around you!',
+      image: 'http://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Wannsee_Am_Sandwerder_Borussia-Monument.JPG/800px-Wannsee_Am_Sandwerder_Borussia-Monument.JPG',
+      description: 'Located near the beautiful Wannsee, an astonishing sight!'
     }
   ]
 
@@ -12,8 +14,7 @@ angular.module('aroundhere').controller('MonumentsController', ['$scope', '$http
     var currentLat  = $geolocation.position.coords.latitude
     var currentLong = $geolocation.position.coords.longitude
 
-    $monuments.getSurroundingFor(currentLong, currentLat, 10000)
-      .then(setMonumentList)
+    $monuments.getSurroundingFor(currentLong, currentLat, 10000).then(setMonumentList)
   }
 
   function setMonumentList(l) {
