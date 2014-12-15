@@ -122,6 +122,6 @@ for i in range(0, len(listText)):
     monument_id = db_monuments.save(monument)
 
 
-print('Failed to extract', failedDescriptionExtractions, 'descriptions')
+print('\nFailed to extract', failedDescriptionExtractions, 'descriptions')
 
 denkmalliste.close
