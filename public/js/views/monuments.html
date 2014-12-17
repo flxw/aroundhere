@@ -1,13 +1,10 @@
-<div class='card' ng-repeat='monument in monuments' ng-click='showMonumentDetails($index)'>
-  <img src='{{monument.image}}'>
+<paper-shadow class='card' z=2 ng-repeat='address in monumentAddresses' ng-click='showMonumentDetails($index)'>
+  <img src='address.images[0]' ng-if='address.linkedData.images !== null'>
   <div class='description'>
-    <h2>{{monument._id}}</h2>
-    <p>{{monument.description}}</p>
+    <h2>{{address.mon.belongsToMonument.description}}</h2>
+    <p>{{address.mon.formatted}}</p>
   </div>
-</div>
+</paper-shadow>
 
-<div id='action-button' class='fab red' ng-click='lookForNearbyMonuments()'>
-  <core-icon icon='search' aria-label='search' role='img' ng-show='!isLoading'></core-icon>
-
-  <core-icon icon='more-horiz' aria-label='more-horiz' role='img' ng-show='isLoading'></core-icon>
-</div>
+<paper-fab id='action-button' icon='search' ng-click='lookForNearbyMonuments()' ng-if='!isLoading'></paper-fab>
+<paper-fab id='action-button' icon='more-horiz' ng-click='lookForNearbyMonuments()' ng-if='isLoading'></paper-fab>

@@ -1,12 +1,8 @@
-angular.module('aroundhere').controller('MonumentsController', ['$scope', '$http', '$geolocation', 'MapService', 'MonumentService', function($scope, $http, $geolocation,  $map, $monuments) {
+angular.module('aroundhere').controller('MonumentsController', ['$scope', '$http', '$geolocation', 'MapService', 'MonumentService', '$location', function($scope, $http, $geolocation,  $map, $monuments, $location) {
   $scope.isLoading = false
-  $scope.monuments = [
-    {
-      _id: 'Activate the action button to see monuments around you!',
-      image: 'http://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Wannsee_Am_Sandwerder_Borussia-Monument.JPG/800px-Wannsee_Am_Sandwerder_Borussia-Monument.JPG',
-      description: 'Located near the beautiful Wannsee, an astonishing sight!'
-    }
-  ]
+  $scope.monumentAddresses = [{
+    formatted: '123123123'
+  }]
 
   $scope.lookForNearbyMonuments = function() {
     $scope.isLoading = true
@@ -14,11 +10,15 @@ angular.module('aroundhere').controller('MonumentsController', ['$scope', '$http
     var currentLat  = $geolocation.position.coords.latitude
     var currentLong = $geolocation.position.coords.longitude
 
-    $monuments.getSurroundingFor(currentLong, currentLat, 10000).then(setMonumentList)
+    $monuments.getSurroundingFor(currentLong, currentLat, 3000).then(setMonumentList)
+  }
+
+  $scope.showMonumentDetails = function(index) {
+    $location.path('/monument/' + $scope.monumentAddresses[index].mon.belongsToMonument._id)
   }
 
   function setMonumentList(l) {
-    $scope.monuments = l
+    $scope.monumentAddresses = l
     $scope.isLoading = false
   }
 }])
