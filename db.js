@@ -12,12 +12,51 @@ mongoose.connect(config.db.url)
 
 
 var requests = {
-    nearby: function(data, callback, res){
+    nearby: function(reqData, callback, res){
+
         address
-            .find({geolocation: {$near : {$geometry: {type:'Point', coordinates: [parseFloat(data.latitude),parseFloat(data.longitude)]}, $maxDistance: parseFloat(data.distance)}}})
+            .find({
+                geolocation: {
+                    $near: {
+                        $geometry: {
+                            type: 'Point',
+                            coordinates: [parseFloat(reqData.latitude), parseFloat(reqData.longitude)]
+                        }, $maxDistance: parseFloat(reqData.distance)
+                    }
+                }
+            })
             .populate('belongsToMonument')
-            .exec(function(err, docs){
-                callback(res, err, docs)
+            .exec(function (err, docs) {
+                var countMonuments = docs.length
+
+                var monumentReply = []
+                var syncCount = 0
+                var sync = function(monument){
+                    syncCount += 1
+                    monumentReply.push(monument)
+                    //console.log("synced for " + monument.mon.belongsToMonument._id + " count " + syncCount  + " of " + countMonuments)
+                    if(syncCount == countMonuments){
+                        callback(res, err, monumentReply)
+                    }
+                }
+
+
+                docs.forEach(function(monument){
+                    //console.log("Link data for " + monument.belongsToMonument._id)
+                    linkData.linkData(monument.belongsToMonument._id, function(data) {
+                        var aggregatedData = {}
+                        try {
+                            aggregatedData["mon"] = monument
+                            aggregatedData["linkedData"] = data
+
+                        } catch (err) {
+                            console.log("Error in Db-Answer: " + err)
+                        }
+                        sync(aggregatedData)
+
+                    })
+                })
+
 
             })
     },
@@ -28,11 +67,16 @@ var requests = {
                 .find({_id: reqData.monumentId})
                 .populate('addresses')
                 .exec(function(err, docs){
-
-                    for(var key in docs[0]){
-                       data[key] = docs[0][key]
+                    console.log(err)
+                    console.log(docs)
+                    try {
+                        for (var key in docs[0]) {
+                            data[key] = docs[0][key]
+                        }
+                        console.log(data)
+                    }catch(err){
+                        console.log("Error in Db-Answer: " + err)
                     }
-                    console.log(data)
                     if(reqData.type == 'rdf')
                         data = rdf.creatRDF(data)
                     callback(res, null, data)

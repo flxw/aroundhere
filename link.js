@@ -1,5 +1,6 @@
 var http = require('http');
 
+var crawledWikis = {}
 var wikiLinks = [
 
   "http://de.wikipedia.org/wiki/Liste_der_Kulturdenkmale_in_Berlin-Charlottenburg",
@@ -118,11 +119,22 @@ var wikiLinks = [
 
 var linkData = function(id, topCallback){
   var sites = {}
+  //console.log("Started Linking for " + id)
+  crawledWikis[id] = 0
   wikiLinks.forEach(function(entry){
     crawlURL(entry, getLinkForId, id, topCallback)
   })
 
   //getLinkForId(id, sites)
+}
+
+function sync(id, topCallback){
+  //console.log("Sync, ID " + id + " crawled " + crawledWikis[id] + " of " + wikiLinks.length)
+  if(crawledWikis[id] >= wikiLinks.length){
+
+    topCallback({})
+  }
+
 }
 
 function crawlURL(url, callback, id, topCallback){
@@ -133,6 +145,7 @@ function crawlURL(url, callback, id, topCallback){
 
     });
     res.on("end", function() {
+      crawledWikis[id] += 1
       callback(id, url, data, topCallback);
     });
   }).on("error", function() {
@@ -151,6 +164,7 @@ function getLinkForId(id, url, html, topCallback){
     var linkedData = {}
 
     if(index > -1) {
+      console.log("Match found in " + url)
       //Define Range of interesting Part for a monumentID
       var startIndex = html.indexOf("href", index)
       var endScopeImg = html.search(getNextId(id, html))
@@ -171,7 +185,12 @@ function getLinkForId(id, url, html, topCallback){
       if(wikiDataLink)
         linkedData.wikiDataLink = wikiDataLink
 
+      crawledWikis[id] = 0
       topCallback(linkedData)
+
+    }else{
+      sync(id, topCallback)
+      //console.log("No Match found in " + url)
     }
 
 
@@ -183,28 +202,38 @@ exports.linkData = linkData
 // private -------------------------------------------------------
 
 var getLinkFromHtml = function(html){
-  var nextColumn = html.match(possibleLink)[0]
-  console.log(nextColumn)
-  console.log(nextColumn.match(/a/).length)
-  if(nextColumn.match(/a/).length == 1){
-    var link = nextColumn.match(linkExtract)
-    link = link[0].slice(0, link.length-3)
-    link = "http://www.dbpedia.org" + link.replace("wiki", "page")
-    console.log(link)
-    return link
-  }
+  try{
+      var nextColumn = html.match(possibleLink)[0]
+      if(nextColumn.match(/a/).length == 1) {
+
+        var link = nextColumn.match(linkExtract)
+        link = link[0].slice(0, link.length - 3)
+        link = "http://www.dbpedia.org" + link.replace("wiki", "page")
+        console.log(link)
+        return link
+      }
+    }catch(err){
+      console.log("Error while parsing for WikiData_link: " + err)
+    }
+
+
 
   return null
 }
 
 var getImageForId = function(id, html){
-  var images = html.match(regImages)
-  for(var i=0; i<images.length; i++){
-    images[i] = images[i].slice(7)
-    images[i] = "http://"+images[i].slice(0,images[i].length-1)
-    images[i] = images[i].replace(/\/.{0,4}px/, "/512px")
+  try {
+    var images = html.match(regImages)
+    for (var i = 0; i < images.length; i++) {
+      images[i] = images[i].slice(7)
+      images[i] = "http://" + images[i].slice(0, images[i].length - 1)
+      images[i] = images[i].replace(/\/.{0,4}px/, "/512px")
+    }
+    return images
+  }catch(error){
+    console.log(error)
+    return null
   }
-  return images
 }
 
 

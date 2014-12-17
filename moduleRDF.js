@@ -29,7 +29,8 @@ var createRDF = function(data){
         rdfBody += "\tdbo:thumbnail <" + image + ">,\n"
     })
 
-    rdfBody += "\towl:sameAs <" + data.wikiDataLink + ">\n."
+    if(data.wikiDataLink)
+        rdfBody += "\towl:sameAs <" + data.wikiDataLink + ">\n."
 
     return rdfHeader + rdfBody
 }
