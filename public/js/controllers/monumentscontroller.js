@@ -10,7 +10,7 @@ angular.module('aroundhere').controller('MonumentsController', ['$scope', '$http
     var currentLat  = $geolocation.position.coords.latitude
     var currentLong = $geolocation.position.coords.longitude
 
-    $monuments.getSurroundingFor(currentLong, currentLat, 3000).then(setMonumentList)
+    $monuments.getSurroundingFor(currentLong, currentLat, 200).then(setMonumentList)
   }
 
   $scope.showMonumentDetails = function(index) {
