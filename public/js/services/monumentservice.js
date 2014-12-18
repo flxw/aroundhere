@@ -1,4 +1,6 @@
 angular.module('aroundhere').factory('MonumentService', ['$http', '$q', function($http, $q) {
+  var monuments = {}
+
   function getSurroundingFor(long, lat, dist) {
     var deferred = $q.defer()
 
@@ -15,12 +17,28 @@ angular.module('aroundhere').factory('MonumentService', ['$http', '$q', function
       }
     }
 
-    $http(request).success(deferred.resolve)
+    $http(request).success(function(m) {
+      for (var i = 0; i < m.length; ++i) {
+        monuments[m[i].mon.belongsToMonument._id] = m[i]
+      }
+
+      deferred.resolve(m)
+    })
 
     return deferred.promise
   }
 
+  function getSingleMonument(id) {
+    if (id in monuments) {
+      return monuments[id]
+    } else {
+      console.log('need to get this from api')
+      return []
+    }
+  }
+
   return {
-    getSurroundingFor: getSurroundingFor
+    getSurroundingFor: getSurroundingFor,
+    getSingleMonument: getSingleMonument
   }
 }])

@@ -40,6 +40,11 @@ var requests = {
                     }
                 }
 
+                if (docs.length === 0) {
+                    console.log('no data yet!')
+                    res.json([])
+                }
+
 
                 docs.forEach(function(monument){
                     //console.log("Link data for " + monument.belongsToMonument._id)

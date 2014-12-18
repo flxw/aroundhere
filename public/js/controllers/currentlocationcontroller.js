@@ -1,8 +1,9 @@
 'use strict';
 
 angular.module('aroundhere').controller('CurrentlocationController', ['$geolocation', '$scope', 'MapService', function($geolocation, $scope, map) {
+  $scope.currentLocation = 'Hasso Plattner Institut'
   $geolocation.watchPosition({
-    timeout: 60000,
+    timeout: 6000,
     maximumAge: 5000,
     enableHighAccuracy: true
   })
@@ -11,5 +12,6 @@ angular.module('aroundhere').controller('CurrentlocationController', ['$geolocat
 
   function handlePositionUpdate(event,position) {
     map.setCurrentPosition(position.coords.latitude, position.coords.longitude)
+    $scope.currentLocation = position.coords.latitude + ' | ' + position.coords.longitude
   }
 }])
