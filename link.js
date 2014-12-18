@@ -103,7 +103,7 @@ var wikiLinks = [
   //"http://de.wikipedia.org//wiki/Liste_der_Kulturdenkmale_in_Berlin-Tempelhof",
   //"http://de.wikipedia.org//wiki/Liste_der_Kulturdenkmale_in_Berlin-Tiergarten",
   //"http://de.wikipedia.org//wiki/Liste_der_Kulturdenkmale_in_Berlin-Waidmannslust",
-  //"http://de.wikipedia.org//wiki/Liste_der_Kulturdenkmale_in_Berlin-Wannsee",
+  "http://de.wikipedia.org//wiki/Liste_der_Kulturdenkmale_in_Berlin-Wannsee",
   //"http://de.wikipedia.org//wiki/Liste_der_Kulturdenkmale_in_Berlin-Wartenberg",
   //"http://de.wikipedia.org//wiki/Liste_der_Kulturdenkmale_in_Berlin-Wedding",
   //"http://de.wikipedia.org//wiki/Liste_der_Kulturdenkmale_in_Berlin-Wei%C3%9Fensee",
