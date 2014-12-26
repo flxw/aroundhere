@@ -2,11 +2,6 @@ var db = require("./db.js")
 var modUrl = require("url")
 
 var init = function(app){
-  app.route('/')
-  .get(function(req, res) {
-    res.render('index.html')
-  })
-
   app.get("/backend/id/*", function(req, res){
       var url = modUrl.parse(req.url)
       var routeElem = getRoutes(url.pathname)
