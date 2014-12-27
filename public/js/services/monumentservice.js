@@ -1,5 +1,10 @@
 angular.module('aroundhere').factory('MonumentService', ['$http', '$q', function($http, $q) {
   var monuments = {}
+  var lastRequestResult = []
+
+  function getLastRequestResult() {
+    return lastRequestResult
+  }
 
   function getSurroundingFor(long, lat, dist) {
     var deferred = $q.defer()
@@ -22,6 +27,8 @@ angular.module('aroundhere').factory('MonumentService', ['$http', '$q', function
         monuments[m[i].mon.belongsToMonument._id] = m[i]
       }
 
+      lastRequestResult = m
+
       deferred.resolve(m)
     })
 
@@ -39,6 +46,7 @@ angular.module('aroundhere').factory('MonumentService', ['$http', '$q', function
 
   return {
     getSurroundingFor: getSurroundingFor,
-    getSingleMonument: getSingleMonument
+    getSingleMonument: getSingleMonument,
+    getLastRequestResult: getLastRequestResult
   }
 }])

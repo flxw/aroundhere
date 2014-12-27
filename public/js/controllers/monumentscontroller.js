@@ -1,8 +1,6 @@
 angular.module('aroundhere').controller('MonumentsController', ['$scope', '$http', '$geolocation', 'MapService', 'MonumentService', '$location', function($scope, $http, $geolocation,  $map, $monuments, $location) {
   $scope.isLoading = false
-  $scope.monumentAddresses = [{
-    formatted: '123123123'
-  }]
+  $scope.monumentAddresses = $monuments.getLastRequestResult()
 
   $scope.lookForNearbyMonuments = function() {
     $scope.isLoading = true
