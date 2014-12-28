@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('aroundhere').controller('CurrentlocationController', ['$geolocation', '$scope', '$http', 'MapService', function($geolocation, $scope, $http, map) {
+angular.module('aroundhere').controller('CurrentlocationController', ['$geolocation', '$scope', '$http', 'MapService', 'GoogleApiService', function($geolocation, $scope, $http, map, googleapi) {
   $scope.currentLocation = ''
   $geolocation.watchPosition({
     timeout: 6000,
@@ -20,7 +20,7 @@ angular.module('aroundhere').controller('CurrentlocationController', ['$geolocat
         'Content-Type': undefined
       },*/
       params: {
-        key: 'AIzaSyAYfnpR4oWhEB6dnCb2Qr2puVPjsLt8j2I',
+        key: googleapi.key,
         latlng: position.coords.latitude + ',' + position.coords.longitude
       }
     }
