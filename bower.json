@@ -26,10 +26,6 @@
     "angular": "~1.3.5",
     "ngGeolocation": "~0.0.4",
     "angular-route": "~1.3.5",
-    "normalize.css": "~3.0.2",
-    "polymer": "Polymer/polymer#~0.5.2",
-    "font-roboto": "Polymer/font-roboto#~0.5.2",
-    "paper-fab": "Polymer/paper-fab#~0.5.2",
-    "paper-shadow": "Polymer/paper-shadow#~0.5.2"
+    "normalize.css": "~3.0.2"
   }
 }

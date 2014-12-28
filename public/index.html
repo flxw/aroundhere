@@ -3,13 +3,6 @@
 <head>
   <meta name='viewport' content='width=device-width, initial-scale=1'>
 
-  <script src='vendor/webcomponentsjs/webcomponents.min.js'></script>
-
-  <link rel='import' href='../vendor/font-roboto/roboto.html'>
-  <link rel='import' href='../vendor/core-icons/core-icons.html'>
-  <link rel='import' href='../vendor/paper-fab/paper-fab.html'>
-  <link rel='import' href='../vendor/paper-shadow/paper-shadow.html'>
-
   <link rel='stylesheet' type='text/css' href='/vendor/normalize.css/normalize.css'>
   <link rel='stylesheet' type='text/css' href='/css/aroundhere.css'>
 </head>
@@ -17,9 +10,9 @@
 <body ng-app='aroundhere'>
   <div id='currentlocation-container' ng-controller='CurrentlocationController'>
     <div id='google-map'></div>
-    <paper-shadow id='currentlocation-banner' z=1>
+    <div id='currentlocation-banner' class='card card-padding'>
       <p>You are around here: {{ currentLocation }}</p>
-    </paper-shadow>
+    </div>
   </div>
 
   <div id='card-area' ng-view></div>
