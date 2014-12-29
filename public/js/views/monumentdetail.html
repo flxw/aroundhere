@@ -8,7 +8,7 @@
 </div>
 
 <div class='card' ng-repeat='imageUrl in details.linkedData.images'>
-  <img class='detail' src='{{imageUrl}}'>
+  <img class='detail' ng-src='{{imageUrl}}'>
 </div>
 
 <div id='action-button' class="floating-action-button" ng-click='goBack()'>

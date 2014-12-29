@@ -1,5 +1,5 @@
 <div class='card card-padding' z=2 ng-repeat='address in monumentAddresses' ng-click='showMonumentDetails($index)'>
-  <img src='{{address.linkedData.images[0]}}' ng-if='address.linkedData.images !== null'>
+  <img ng-src='{{address.linkedData.images[0]}}' ng-if='address.linkedData.images !== null'>
   <div class='description'>
     <h2>{{address.mon.belongsToMonument.description}}</h2>
     <p>{{address.mon.formatted}}</p>
