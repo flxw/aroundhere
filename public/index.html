@@ -11,9 +11,11 @@
 
 <body ng-app='aroundhere'>
   <div id='currentlocation-container' ng-controller='CurrentlocationController'>
+    <div id='map'></div>
     <div id='google-map'></div>
-    <div id='currentlocation-banner' class='card card-padding'>
-      <p>You are around here: {{ currentLocation }}</p>
+    <div id='currentlocation-banner'>
+      <h1>Around Here</h1>
+      <p>{{ currentLocation }}</p>
     </div>
   </div>
 

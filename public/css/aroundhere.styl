@@ -12,29 +12,40 @@ html, body
   font-family Roboto, 'Helvetica Neue', helvetica
 
 .hidden
-  displaynone
+  display none
 
 #currentlocation-container
   position relative
   width 100%
-  height 40%
+  height 15em
 
-#google-map
+#map
   position relative
+  display block
   width 100%
-  height 90%
+  height 8em
 
 #currentlocation-banner
   position relative
-  top -20%
-  height 30%
-  padding 16px
-  background-color #fff
+  display block
+  height 5em
+  padding 1em
+  background-color #2196F3
   box-shadow 0px 2px 5px 0px rgba(0,0,0,0.75)
 
+  & > h1
+    font-size 2em
+    font-weight 100
+    color #e0e0e0
+    margin 0
+
+  & > p
+    font-size 1.2
+    color #fff
+    margin 0
+    margin-left 1em
+
 #card-area
-  position relative
-  top -1em
   padding 1em
 
 #action-button
