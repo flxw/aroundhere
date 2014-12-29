@@ -1,4 +1,4 @@
-angular.module('aroundhere').controller('MonumentsController', ['$scope', '$http', '$geolocation', 'MapService', 'MonumentService', '$location', function($scope, $http, $geolocation,  $map, $monuments, $location) {
+angular.module('aroundhere').controller('MonumentsController', ['$scope', '$geolocation', 'MapService', 'MonumentService', '$location', function($scope, $geolocation,  $map, $monuments, $location) {
   $scope.isLoading = false
   $scope.monumentAddresses = $monuments.getLastRequestResult()
 
@@ -16,7 +16,12 @@ angular.module('aroundhere').controller('MonumentsController', ['$scope', '$http
   }
 
   function setMonumentList(l) {
+    var currentLat  = $geolocation.position.coords.latitude
+    var currentLong = $geolocation.position.coords.longitude
+
     $scope.monumentAddresses = l
+    $map.showMonumentsAroundCurrentPosition(currentLat, currentLong, l)
+
     $scope.isLoading = false
   }
 }])
