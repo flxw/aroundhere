@@ -2,13 +2,19 @@ angular.module('aroundhere').controller('MonumentsController', ['$scope', '$geol
   $scope.isLoading = false
   $scope.monumentAddresses = $monuments.getLastRequestResult()
 
+  if ($scope.monumentAddresses.length !== 0) {
+    var currentLat  = $geolocation.position.coords.latitude
+    var currentLong = $geolocation.position.coords.longitude
+    $map.showMonumentsAroundCurrentPosition(currentLat, currentLong, $scope.monumentAddresses)
+  }
+
   $scope.lookForNearbyMonuments = function() {
     $scope.isLoading = true
 
     var currentLat  = $geolocation.position.coords.latitude
     var currentLong = $geolocation.position.coords.longitude
 
-    $monuments.getSurroundingFor(currentLong, currentLat, 200).then(setMonumentList)
+    $monuments.getSurroundingFor(currentLong, currentLat, 100).then(setMonumentList)
   }
 
   $scope.showMonumentDetails = function(index) {

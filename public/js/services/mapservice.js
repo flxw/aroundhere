@@ -27,7 +27,23 @@ angular.module('aroundhere').factory('MapService', ['$http', 'GoogleApiService',
     mapArea.src = imageUrl
   }
 
+  function showMonumentAndCurrentPosition(currentLat, currentLong, monumentLat, monumentLong) {
+    var currentCoordinates = currentLat +  ',' + currentLong
+    var monumentCoordinates = monumentLat + ',' + monumentLong
+    var imageUrl = googleApiService.staticMapServiceUrl
+    var monumentMarkers = 'color:red'
+
+    imageUrl +=  '?center=' + currentCoordinates
+    imageUrl += '&zoom=15'
+    imageUrl += '&size=' + mapContainer.clientWidth + 'x' + mapContainer.clientHeight
+    imageUrl += '&markers=color:0x2196f3|' + currentCoordinates
+    imageUrl += '&markers=size:small%7color:red|' + monumentCoordinates
+
+    mapArea.src = imageUrl
+  }
+
  return {
-  showMonumentsAroundCurrentPosition: showMonumentsAroundCurrentPosition
+  showMonumentsAroundCurrentPosition: showMonumentsAroundCurrentPosition,
+  showMonumentAndCurrentPosition: showMonumentAndCurrentPosition
  }
 }])
