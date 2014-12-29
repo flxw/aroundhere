@@ -20,7 +20,8 @@ angular.module('aroundhere').factory('MapService', [function() {
 
     currentPositionMarker = new google.maps.Marker({
       position: pos,
-      map: map
+      map: map,
+      icon: '/img/my_position.png'
     })
 
     if (oldMarker === null) {

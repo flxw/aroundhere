@@ -22,7 +22,7 @@ angular.module('aroundhere').controller('CurrentlocationController', ['$geolocat
       params: {
         key: googleapi.key,
         latlng: position.coords.latitude + ',' + position.coords.longitude
-      }
+        }
     }
 
     $http(request).success(function(data) {
