@@ -2,17 +2,22 @@ var mongoose = require('mongoose')
 var config = require('./config.js');
 var linkData = require("./link.js")
 var rdf = require("./moduleRDF.js")
+var mongojs = require("mongojs")
 
 //models ----------------------------------------
 var address = require('./models/address.js')
-var monument = require('./models/monument.js')
+var monumentSchema = require('./models/monument.js')
 
 // configuration --------------------------------
 mongoose.connect(config.db.url)
-
+var collections = ["addresses", "monuments"]
+var db = mongojs.connect(config.db.url, collections);
 
 var requests = {
     nearby: function(reqData, callback, res){
+        var updates = []
+        var syncCount = 0
+        var countMonuments
 
         address
             .find({
@@ -27,40 +32,36 @@ var requests = {
             })
             .populate('belongsToMonument')
             .exec(function (err, docs) {
-                var countMonuments = docs.length
+                countMonuments = docs.length
 
                 var monumentReply = []
-                var syncCount = 0
-                var sync = function(monument){
-                    syncCount += 1
-                    monumentReply.push(monument)
-                    //console.log("synced for " + monument.mon.belongsToMonument._id + " count " + syncCount  + " of " + countMonuments)
-                    if(syncCount == countMonuments){
-                        callback(res, err, monumentReply)
-                    }
-                }
 
                 if (docs.length === 0) {
                     console.log('no data yet!')
                     res.json([])
                 }
 
-
-                docs.forEach(function(monument){
+                for(var i = 0; i<docs.length; i++){
+                    var monument = docs[i]
                     //console.log("Link data for " + monument.belongsToMonument._id)
-                    linkData.linkData(monument.belongsToMonument._id, function(data) {
-                        var aggregatedData = {}
-                        try {
-                            aggregatedData["mon"] = monument
-                            aggregatedData["linkedData"] = data
 
-                        } catch (err) {
-                            console.log("Error in Db-Answer: " + err)
-                        }
-                        sync(aggregatedData)
+                    var update = monument.belongsToMonument.lastUpdate == "" ||
+                                (new Date(Date.now()).getTime() - monument.belongsToMonument.lastUpdate) /  (1000*3600*24) > 14
+                    if(update) {
+                     linkData.linkData(monument.belongsToMonument._id, function (data) {
+                             var date = new Date(Date.now()).getTime() + ""
 
-                    })
-                })
+                             db.monuments.update({_id: data.monumentId}, {$set: {linkedData: JSON.stringify(data), lastUpdate: date}}, function(err, updated){
+                                 if( err || !updated ) console.log(err);
+                             })
+                     })
+
+                    }else
+                        countMonuments -= 1
+
+                    monumentReply.push(monument)
+                }
+                callback(res, err, monumentReply)
 
 
             })
@@ -68,7 +69,7 @@ var requests = {
     monument: function(reqData, callback, res){
         linkData.linkData(reqData.monumentId, function(data){
             console.log(reqData.monumentId)
-            monument
+            monumentSchema
                 .find({_id: reqData.monumentId})
                 .populate('addresses')
                 .exec(function(err, docs){

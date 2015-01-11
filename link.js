@@ -154,7 +154,7 @@ function crawlURL(url, callback, id, topCallback){
 }
 
 //Regular Expressions for parsing Wikipedia
-var regIds  = /<td rowspan.*id="\d{8}/g
+var regIds  = /<td rowspan.*id="\d{8}|<span.*id="\d{8}/g
 var regImages = /src=".*\.jpg"/gi
 var possibleLink = /<td[\s\S]*?<\/td>/
 var linkExtract = /\/.*?" /
@@ -164,7 +164,7 @@ function getLinkForId(id, url, html, topCallback){
     var linkedData = {}
 
     if(index > -1) {
-      console.log("Match found in " + url)
+      console.log("   Match found in " + url)
       //Define Range of interesting Part for a monumentID
       var startIndex = html.indexOf("href", index)
       var endScopeImg = html.search(getNextId(id, html))
@@ -176,6 +176,10 @@ function getLinkForId(id, url, html, topCallback){
       var link = html.substring(startIndex + 6, endIndex)
       linkedData.link = link
 
+      //console.log("StartIndex: " + startIndex)
+      //console.log("EndIndex ScopeImage: " + endScopeImg)
+      //console.log("Endindex SenatLink: " + endIndex)
+
       //Parse Images from Wikipedia
       var imgLinks = getImageForId(id, monumentHtml)
       linkedData.images = imgLinks
@@ -186,6 +190,8 @@ function getLinkForId(id, url, html, topCallback){
         linkedData.wikiDataLink = wikiDataLink
 
       crawledWikis[id] = 0
+
+      linkedData.monumentId = id
       topCallback(linkedData)
 
     }else{
@@ -208,8 +214,10 @@ var getLinkFromHtml = function(html){
 
         var link = nextColumn.match(linkExtract)
         link = link[0].slice(0, link.length - 3)
-        link = "http://www.dbpedia.org" + link.replace("wiki", "page")
-        console.log(link)
+        if(link.slice(-3).match(/jpg|png|gif/))
+          link = null
+        else
+          link = "http://www.dbpedia.org" + link.replace("wiki", "page")
         return link
       }
     }catch(err){
@@ -223,6 +231,7 @@ var getLinkFromHtml = function(html){
 
 var getImageForId = function(id, html){
   try {
+    //console.log(html)
     var images = html.match(regImages)
     for (var i = 0; i < images.length; i++) {
       images[i] = images[i].slice(7)
@@ -231,7 +240,7 @@ var getImageForId = function(id, html){
     }
     return images
   }catch(error){
-    console.log(error)
+    console.log("Error while Parsing image: " + error)
     return null
   }
 }

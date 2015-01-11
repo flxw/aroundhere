@@ -1,5 +1,6 @@
 var db = require("./db.js")
 var modUrl = require("url")
+var linkData = require("./link.js")
 
 var init = function(app){
   app.route('/')
@@ -17,7 +18,7 @@ var init = function(app){
 
     app.get("/getNearMonuments", function(req, res){
         var data = req.query
-        console.log(data)
+        //console.log(data)
         db.handleRequest(res, "nearby", data, dbCallback)
     })
 
