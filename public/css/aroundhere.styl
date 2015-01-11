@@ -137,6 +137,25 @@ html, body
 .card.padded
   padding 16px
 
+.card.animate-enter,.card.animate-leave
+  -webkit-transition 400ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all
+  -moz-transition 400ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all
+  -ms-transition 400ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all
+  -o-transition 400ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all
+  transition 400ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all
+  position relative
+  display block
+  overflow hidden
+  text-overflow clip
+  white-spacenowrap
+
+.card.animate-leave.animate-leave-active, .card.animate-enter
+  opacity 0
+  height 0px
+
+.card.animate-enter.animate-enter-active, .card.animate-leave
+  opacity 1
+
 .floating-action-button
   border-radius 50%
   width 3em
@@ -147,7 +166,7 @@ html, body
     color #fff
     position absolute
     font-size 1.5em
-    width: 100%;
-    text-align: center;
-    line-height: 2em;
-    font-size: 1.5em;
+    width 100%
+    text-align center
+    line-height 2em
+    font-size 1.5em

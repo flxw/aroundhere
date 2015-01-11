@@ -1,5 +1,5 @@
 <div class='col-3'>
-  <div class='card padded' ng-repeat='address in monumentAddresses[0]' ng-click='showMonumentDetails(0, $index)'>
+  <div class='card padded' ng-repeat='address in monumentAddresses[0]' ng-animate='animate' ng-click='showMonumentDetails(0, $index)'>
     <img ng-src='{{address.linkedData.images[0]}}' ng-if='address.linkedData.images !== null'>
     <div class='description'>
       <h2>{{address.mon.belongsToMonument.description}}</h2>
@@ -8,7 +8,7 @@
   </div>
 </div>
 <div class='col-3'>
-  <div class='card padded' ng-repeat='address in monumentAddresses[1]' ng-click='showMonumentDetails(1, $index)'>
+  <div class='card padded' ng-repeat='address in monumentAddresses[1]' ng-animate='animate' ng-click='showMonumentDetails(1, $index)'>
     <img ng-src='{{address.linkedData.images[0]}}' ng-if='address.linkedData.images !== null'>
     <div class='description'>
       <h2>{{address.mon.belongsToMonument.description}}</h2>
@@ -17,7 +17,7 @@
   </div>
 </div>
 <div class='col-3'>
-  <div class='card padded' ng-repeat='address in monumentAddresses[2]' ng-click='showMonumentDetails(2, $index)'>
+  <div class='card padded' ng-repeat='address in monumentAddresses[2]' ng-animate="'animate'" ng-click='showMonumentDetails(2, $index)'>
     <img ng-src='{{address.linkedData.images[0]}}' ng-if='address.linkedData.images !== null'>
     <div class='description'>
       <h2>{{address.mon.belongsToMonument.description}}</h2>
