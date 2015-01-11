@@ -1,6 +1,6 @@
 'use strict';
 
-var app = angular.module('aroundhere', ['ngGeolocation', 'ngRoute'])
+var app = angular.module('aroundhere', ['ngGeolocation', 'ngRoute', 'ngAnimate'])
 
 app.config(['$routeProvider', function($routeProvider) {
   $routeProvider

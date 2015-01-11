@@ -1,10 +1,34 @@
-<paper-shadow class='card' z=2 ng-repeat='address in monumentAddresses' ng-click='showMonumentDetails($index)'>
-  <img src='{{address.linkedData.images[0]}}' ng-if='address.linkedData.images !== null'>
-  <div class='description'>
-    <h2>{{address.mon.belongsToMonument.description}}</h2>
-    <p>{{address.mon.formatted}}</p>
+<div class='col-3'>
+  <div class='card padded' ng-repeat='address in monumentAddresses[0]' ng-animate='animate' ng-click='showMonumentDetails(0, $index)'>
+    <img ng-src='{{address.linkedData.images[0]}}' ng-if='address.linkedData.images !== null'>
+    <div class='description'>
+      <h2>{{address.mon.belongsToMonument.description}}</h2>
+      <p>{{address.mon.formatted}}</p>
+    </div>
   </div>
-</paper-shadow>
+</div>
+<div class='col-3'>
+  <div class='card padded' ng-repeat='address in monumentAddresses[1]' ng-animate='animate' ng-click='showMonumentDetails(1, $index)'>
+    <img ng-src='{{address.linkedData.images[0]}}' ng-if='address.linkedData.images !== null'>
+    <div class='description'>
+      <h2>{{address.mon.belongsToMonument.description}}</h2>
+      <p>{{address.mon.formatted}}</p>
+    </div>
+  </div>
+</div>
+<div class='col-3'>
+  <div class='card padded' ng-repeat='address in monumentAddresses[2]' ng-animate="'animate'" ng-click='showMonumentDetails(2, $index)'>
+    <img ng-src='{{address.linkedData.images[0]}}' ng-if='address.linkedData.images !== null'>
+    <div class='description'>
+      <h2>{{address.mon.belongsToMonument.description}}</h2>
+      <p>{{address.mon.formatted}}</p>
+    </div>
+  </div>
+</div>
 
-<paper-fab id='action-button' icon='search' ng-click='lookForNearbyMonuments()' ng-if='!isLoading'></paper-fab>
-<paper-fab id='action-button' icon='more-horiz' ng-click='lookForNearbyMonuments()' ng-if='isLoading'></paper-fab>
+<div id='action-button' class="floating-action-button" ng-click='lookForNearbyMonuments()' ng-if='!isLoading'>
+  <span class='height-fix'>?</span>
+</div>
+<div id='action-button' class="floating-action-button" ng-if='isLoading'>
+  <span class='height-fix'>...</span>
+</div>

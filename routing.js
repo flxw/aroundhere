@@ -3,11 +3,6 @@ var modUrl = require("url")
 var linkData = require("./link.js")
 
 var init = function(app){
-  app.route('/')
-  .get(function(req, res) {
-    res.render('index.html')
-  })
-
   app.get("/backend/id/*", function(req, res){
       var url = modUrl.parse(req.url)
       var routeElem = getRoutes(url.pathname)

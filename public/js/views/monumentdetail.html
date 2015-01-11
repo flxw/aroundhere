@@ -1,12 +1,16 @@
-<paper-shadow class='card' z=2>
-  {{ details }}
-</paper-shadow>
+<div class='card padded'>
+  <h1>{{ details.mon.belongsToMonument.description }}</h1>
+  <p>{{ details.mon.formatted }}</p>
+</div>
 
-<div id='action-button' class='fab red' ng-click='goBack()'>
-  <core-icon icon='chevron-left' aria-label='chevron-left' role='img'>
-    <svg viewBox='0 0 24 24' height='100%' width='100%' preserveAspectRatio='xMidYMid meet' fit='' style='pointer-events: none; display: block;'>
-      <g><path d='M19 13h-6v6h-2v-6h-6v-2h6v-6h2v6h6v2z'></path></g>
-    </svg>
-  </core-icon>
-  <paper-ripple class='circle recenteringTouch' fit=''></paper-ripple>
+<div class='card padded'>
+  <a href='{{details.linkedData.link}}'>More information</a>
+</div>
+
+<div class='card' ng-repeat='imageUrl in details.linkedData.images'>
+  <img class='detail' ng-src='{{imageUrl}}'>
+</div>
+
+<div id='action-button' class="floating-action-button" ng-click='goBack()'>
+  <span class='height-fix'>X</span>
 </div>
