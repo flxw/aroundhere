@@ -19,8 +19,8 @@ angular.module('aroundhere').controller('MonumentsController', ['$scope', '$geol
     $monuments.getSurroundingFor(currentLong, currentLat, 100).then(setMonumentList)
   }
 
-  $scope.showMonumentDetails = function(index) {
-    $location.path('/monument/' + $scope.monumentAddresses[index].mon.belongsToMonument._id)
+  $scope.showMonumentDetails = function(i, index) {
+    $location.path('/monument/' + $scope.monumentAddresses[i][index].mon.belongsToMonument._id)
   }
 
   function setMonumentList(l) {
