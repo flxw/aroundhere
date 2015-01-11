@@ -1,8 +1,28 @@
-<div class='card card-padding' z=2 ng-repeat='address in monumentAddresses' ng-click='showMonumentDetails($index)'>
-  <img ng-src='{{address.linkedData.images[0]}}' ng-if='address.linkedData.images !== null'>
-  <div class='description'>
-    <h2>{{address.mon.belongsToMonument.description}}</h2>
-    <p>{{address.mon.formatted}}</p>
+<div class='col-3'>
+  <div class='card padded' ng-repeat='address in monumentAddresses[0]' ng-click='showMonumentDetails($index)'>
+    <img ng-src='{{address.linkedData.images[0]}}' ng-if='address.linkedData.images !== null'>
+    <div class='description'>
+      <h2>{{address.mon.belongsToMonument.description}}</h2>
+      <p>{{address.mon.formatted}}</p>
+    </div>
+  </div>
+</div>
+<div class='col-3'>
+  <div class='card padded' ng-repeat='address in monumentAddresses[1]' ng-click='showMonumentDetails($index)'>
+    <img ng-src='{{address.linkedData.images[0]}}' ng-if='address.linkedData.images !== null'>
+    <div class='description'>
+      <h2>{{address.mon.belongsToMonument.description}}</h2>
+      <p>{{address.mon.formatted}}</p>
+    </div>
+  </div>
+</div>
+<div class='col-3'>
+  <div class='card padded' ng-repeat='address in monumentAddresses[2]' ng-click='showMonumentDetails($index)'>
+    <img ng-src='{{address.linkedData.images[0]}}' ng-if='address.linkedData.images !== null'>
+    <div class='description'>
+      <h2>{{address.mon.belongsToMonument.description}}</h2>
+      <p>{{address.mon.formatted}}</p>
+    </div>
   </div>
 </div>
 

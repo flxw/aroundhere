@@ -1,3 +1,5 @@
+'use strict';
+
 angular.module('aroundhere').controller('MonumentDetailController', ['$scope', '$location', '$routeParams', '$geolocation', 'MapService', 'MonumentService', function($scope, $location, $routeParams, $geolocation, mapService, monumentService) {
   $scope.details = monumentService.getSingleMonument($routeParams.monumentId)
 
