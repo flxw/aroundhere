@@ -41,25 +41,30 @@ var requests = {
                     res.json([])
                 }
 
+                var updatedIds = []
                 for(var i = 0; i<docs.length; i++){
-                    var monument = docs[i]
-                    //console.log("Link data for " + monument.belongsToMonument._id)
+                        var monument = docs[i]
+                        //console.log("Link data for " + monument.belongsToMonument._id)
 
-                    var update = monument.belongsToMonument.lastUpdate == "" ||
-                                (new Date(Date.now()).getTime() - monument.belongsToMonument.lastUpdate) /  (1000*3600*24) > 14
-                    if(update) {
-                     linkData.linkData(monument.belongsToMonument._id, function (data) {
-                             var date = new Date(Date.now()).getTime() + ""
+                        var update = monument.belongsToMonument.lastUpdate == "" ||
+                            (new Date(Date.now()).getTime() - monument.belongsToMonument.lastUpdate) /  (1000*3600*24) > 14
+                        //Dont update the same id more than one time at once
+                        if(update && !(updatedIds.indexOf(monument.belongsToMonument._id) > -1)) {
+                            console.log("Update Monument with id: " + monument.belongsToMonument._id)
+                            updatedIds.push(monument.belongsToMonument._id)
+                            linkData.linkData(monument.belongsToMonument._id, function (data) {
+                                var date = new Date(Date.now()).getTime() + ""
 
-                             db.monuments.update({_id: data.monumentId}, {$set: {linkedData: JSON.stringify(data), lastUpdate: date}}, function(err, updated){
-                                 if( err || !updated ) console.log(err);
-                             })
-                     })
+                                db.monuments.update({_id: data.monumentId}, {$set: {linkedData: JSON.stringify(data), lastUpdate: date}}, function(err, updated){
+                                    if( err || !updated ) console.log(err);
+                                })
+                            })
 
-                    }else
-                        countMonuments -= 1
+                        }else
+                            countMonuments -= 1
 
-                    monumentReply.push(monument)
+                        monumentReply.push(monument)
+
                 }
                 callback(res, err, monumentReply)
 
