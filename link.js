@@ -170,6 +170,7 @@ var possibleLink = /<td[\s\S]*?<\/td>/
 var containedLinks = /<a.*<\/a/g
 var getLinkAim = /href=".*?"/
 var linkExtract = /\/.*?" /
+
 //Regex for Senatsseite Berlin
 var yearOfConstructionRegex = /num-Dat.:.*<td/i
 var getDate = /\d{4}/

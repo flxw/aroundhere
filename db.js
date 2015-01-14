@@ -63,7 +63,16 @@ var requests = {
                         }else
                             countMonuments -= 1
 
-                        monumentReply.push(monument)
+                        var realDic = {}
+
+
+                        realDic.linkedData = monument.belongsToMonument.linkedData
+                        realDic.linkedData = JSON.parse(realDic.linkedData)
+                        realDic.description = monument.belongsToMonument.description
+                        realDic.formatted = monument.formatted
+                        realDic.geolocation = monument.geolocation
+
+                        monumentReply.push(realDic)
 
                 }
                 callback(res, err, monumentReply)
