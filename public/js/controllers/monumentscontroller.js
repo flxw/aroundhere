@@ -1,13 +1,14 @@
 'use strict';
 
 angular.module('aroundhere').controller('MonumentsController', ['$scope', '$geolocation', 'MapService', 'MonumentService', '$location', function($scope, $geolocation,  $map, $monumentService, $location) {
+  var allMonuments = $monumentService.getLastRequestResult()
   $scope.isLoading = false
-  $scope.monuments = prepareDataForThreeColumnDisplay($monumentService.getLastRequestResult())
+  $scope.monuments = prepareDataForThreeColumnDisplay(allMonuments)
 
   if ($scope.monuments.length !== 0) {
     var currentLat  = $geolocation.position.coords.latitude
     var currentLong = $geolocation.position.coords.longitude
-    $map.showMonumentsAroundCurrentPosition(currentLat, currentLong, $scope.monuments)
+    $map.showMonumentsAroundCurrentPosition(currentLat, currentLong, allMonuments)
   }
 
   $scope.lookForNearbyMonuments = function() {
@@ -20,7 +21,7 @@ angular.module('aroundhere').controller('MonumentsController', ['$scope', '$geol
   }
 
   $scope.showMonumentDetails = function(i, index) {
-    $location.path('/monument/' + $scope.monuments[i][index].mon.belongsToMonument._id)
+    $location.path('/monument/' + $scope.monuments[i][index].linkedData.monumentId)
   }
 
   function setMonumentList(l) {

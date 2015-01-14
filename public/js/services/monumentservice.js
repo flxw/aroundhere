@@ -27,7 +27,7 @@ angular.module('aroundhere').factory('MonumentService', ['$http', '$q', function
         monuments[m[i].linkedData.monumentId] = m[i]
       }
 
-      lastRequestResult = m
+      lastRequestResult = JSON.parse(JSON.stringify(m))
 
       deferred.resolve(m)
     })
