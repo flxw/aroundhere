@@ -264,7 +264,7 @@ var getYearOfConstruction = function(html){
     var index = html.search(yearOfConstructionRegex)
     if(index > -1){
       html = html.slice(index)
-      var date = html.match(getDate)
+      var date = html.match(getDate)[0]
       return date
     }
   }catch(error){
