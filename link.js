@@ -1,4 +1,5 @@
 var http = require('http');
+var request = require('request')
 
 var crawledWikis = {}
 var wikiLinks = [
@@ -158,6 +159,12 @@ var regIds  = /<td rowspan.*id="\d{8}|<span.*id="\d{8}/g
 var regImages = /src=".*\.jpg"/gi
 var possibleLink = /<td[\s\S]*?<\/td>/
 var linkExtract = /\/.*?" /
+//Regex for Senatsseite Berlin
+var yearOfConstructionRegex = /num-Dat.:.*<td/i
+var getDate = /\d{4}/
+var nextNewTd = /<td.*<\/td>/
+var tagContent = />.*</
+var monumentsTypeRegex = /Denkmalart:/
 
 function getLinkForId(id, url, html, topCallback){
     var index = html.search(id)
@@ -191,8 +198,24 @@ function getLinkForId(id, url, html, topCallback){
 
       crawledWikis[id] = 0
 
-      linkedData.monumentId = id
-      topCallback(linkedData)
+      console.log(linkedData)
+      request(linkedData.link, function (error, response, body) {
+        var indexStartHtml = body.search(id)
+        body = body.slice(indexStartHtml)
+        //Crawl Data from Senatsseite Berlin
+        var yearOfConstruction = getYearOfConstruction(body)
+        if(yearOfConstruction)
+          linkedData.yearOfConstruction = yearOfConstruction
+
+        var type = typeOfMonument(body)
+        if(type)
+          linkedData.typeOfMonument = type
+
+        linkedData.monumentId = id
+        topCallback(linkedData)
+      })
+
+
 
     }else{
       sync(id, topCallback)
@@ -206,6 +229,36 @@ exports.linkData = linkData
 
 
 // private -------------------------------------------------------
+var typeOfMonument = function(html){
+  try{
+    var index = html.search(monumentsTypeRegex)
+    if(index > -1){
+      html = html.slice(index)
+      var nextTd = html.match(nextNewTd)[0]
+      var type = nextTd.match(tagContent)[0]
+      type = type.slice(1,type.length-1)
+      return type
+
+    }
+  }catch(error){
+    console.log("Error at monumentType: " + error)
+  }
+  return null
+}
+
+var getYearOfConstruction = function(html){
+  try{
+    var index = html.search(yearOfConstructionRegex)
+    if(index > -1){
+      html = html.slice(index)
+      var date = html.match(getDate)
+      return date
+    }
+  }catch(error){
+    console.log("Error at YearOfConstruction: " + error)
+  }
+  return null
+}
 
 var getLinkFromHtml = function(html){
   try{
