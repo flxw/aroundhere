@@ -170,7 +170,7 @@ var possibleLink = /<td[\s\S]*?<\/td>/
 var containedLinks = /<a.*<\/a/g
 var getLinkAim = /href=".*?"/
 var linkExtract = /\/.*?" /
-
+var columnsRegex = /<td.*<\/td/g
 //Regex for Senatsseite Berlin
 var yearOfConstructionRegex = /num-Dat.:.*<td/i
 var getDate = /\d{4}/
@@ -290,14 +290,29 @@ var getLinkFromHtml = function(html){
 
       var points = []
       for(var i= 0; i<links.length; i++){
-        link = links[i]
+        var link = links[i]
         var url = link.match(getLinkAim)[0]
         url = url.slice(6, url.length-1)
-        if(url.indexOf("/wiki/") == 0)
-          url = "http://de.wikipedia.org" + url
+        //if(url.indexOf("/wiki/") == 0)
+        //  url = "http://de.wikipedia.org" + url
         points.push(url)
       }
-      console.log(points)
+      //console.log(points)
+
+      var columns = html.match(columnsRegex)
+      var columnsLinks = {}
+
+      for(var j=0; j<columns.length ; j++){
+            for(var k=0; k<points.length; k++){
+              var index = columns[j].indexOf(points[k])
+              if(index > -1){
+                columnsLinks[j+2] = points[k]
+              }
+            }
+      }
+     console.log(columnsLinks)
+     if(columnsLinks[2])
+      return "http://de.wikipedia.org" + columnsLinks["2"]
 
     }catch(err){
       console.log("Error while parsing for WikiData_link: " + err)
