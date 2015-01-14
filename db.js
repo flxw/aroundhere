@@ -67,7 +67,8 @@ var requests = {
 
 
                         realDic.linkedData = monument.belongsToMonument.linkedData
-                        realDic.linkedData = JSON.parse(realDic.linkedData)
+                        if(realDic.linkedData != "")
+                            realDic.linkedData = JSON.parse(realDic.linkedData)
                         realDic.description = monument.belongsToMonument.description
                         realDic.formatted = monument.formatted
                         realDic.geolocation = monument.geolocation
