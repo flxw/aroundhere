@@ -24,7 +24,7 @@ angular.module('aroundhere').factory('MonumentService', ['$http', '$q', function
 
     $http(request).success(function(m) {
       for (var i = 0; i < m.length; ++i) {
-        monuments[m[i].mon.belongsToMonument._id] = m[i]
+        monuments[m[i].linkedData.monumentId] = m[i]
       }
 
       lastRequestResult = m
