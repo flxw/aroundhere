@@ -1,13 +1,13 @@
 'use strict';
 
-angular.module('aroundhere').controller('MonumentsController', ['$scope', '$geolocation', 'MapService', 'MonumentService', '$location', function($scope, $geolocation,  $map, $monuments, $location) {
+angular.module('aroundhere').controller('MonumentsController', ['$scope', '$geolocation', 'MapService', 'MonumentService', '$location', function($scope, $geolocation,  $map, $monumentService, $location) {
   $scope.isLoading = false
-  $scope.monumentAddresses = prepareDataForThreeColumnDisplay($monuments.getLastRequestResult())
+  $scope.monuments = prepareDataForThreeColumnDisplay($monumentService.getLastRequestResult())
 
-  if ($scope.monumentAddresses.length !== 0) {
+  if ($scope.monuments.length !== 0) {
     var currentLat  = $geolocation.position.coords.latitude
     var currentLong = $geolocation.position.coords.longitude
-    $map.showMonumentsAroundCurrentPosition(currentLat, currentLong, $scope.monumentAddresses)
+    $map.showMonumentsAroundCurrentPosition(currentLat, currentLong, $scope.monuments)
   }
 
   $scope.lookForNearbyMonuments = function() {
@@ -16,11 +16,11 @@ angular.module('aroundhere').controller('MonumentsController', ['$scope', '$geol
     var currentLat  = $geolocation.position.coords.latitude
     var currentLong = $geolocation.position.coords.longitude
 
-    $monuments.getSurroundingFor(currentLong, currentLat, 100).then(setMonumentList)
+    $monumentService.getSurroundingFor(currentLong, currentLat, 100).then(setMonumentList)
   }
 
   $scope.showMonumentDetails = function(i, index) {
-    $location.path('/monument/' + $scope.monumentAddresses[i][index].mon.belongsToMonument._id)
+    $location.path('/monument/' + $scope.monuments[i][index].mon.belongsToMonument._id)
   }
 
   function setMonumentList(l) {
@@ -29,7 +29,7 @@ angular.module('aroundhere').controller('MonumentsController', ['$scope', '$geol
 
     $map.showMonumentsAroundCurrentPosition(currentLat, currentLong, l)
 
-    $scope.monumentAddresses = prepareDataForThreeColumnDisplay(l)
+    $scope.monuments = prepareDataForThreeColumnDisplay(l)
     $scope.isLoading = false
   }
 

@@ -7,3 +7,5 @@ aroundhere.sublime-workspace
 *.iml
 public/vendor
 dump/
+denkmalliste*
+testSchema.js

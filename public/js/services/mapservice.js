@@ -11,8 +11,8 @@ angular.module('aroundhere').factory('MapService', ['$http', 'GoogleApiService',
     var monumentMarkers = 'size:small%7color:red'
 
     for (var i = 0; i < monuments.length; ++i) {
-      monumentMarkers += '|' + monuments[i].mon.geolocation.coordinates[0]
-      monumentMarkers += ',' + monuments[i].mon.geolocation.coordinates[1]
+      monumentMarkers += '|' + monuments[i].geolocation.coordinates[0]
+      monumentMarkers += ',' + monuments[i].geolocation.coordinates[1]
     }
 
     imageUrl +=  '?center=' + currentCoordinates
