@@ -10,7 +10,7 @@ function lookForMonumentsAt(lat, long) {
   $.getJSON('/getNearMonuments', parameters, function(data, status, xhr) {
     monumentMarkers.clearLayers()
 
-    data.forEach(function(monument) {
+    data.forEach(function(monument, monumentIndex) {
       var marker = L.marker(monument.geolocation.coordinates, {
         title: monument.formatted,
         riseOnHover: true,
@@ -24,6 +24,12 @@ function lookForMonumentsAt(lat, long) {
 
       var popContent = $('<div></div>')
 
+      if (monument.linkedData) {
+        popContent.append('<h3>#' + monument.linkedData.monumentId + '</h3>')
+      } else {
+        popContent.append('<h3>#' + monument.formatted + '</h3>')
+      }
+
       if (monument.description !== "") {
         popContent.append($('<p>' + monument.description + '</p>'))
       }
@@ -36,9 +42,20 @@ function lookForMonumentsAt(lat, long) {
         if (monument.linkedData.link) {
           popContent.append($('<a href="' + monument.linkedData.link + '">More info here</a>'))
         }
+
+        if (monument.linkedData.images) {
+          var slider = $("<div class='slider'></div>")
+
+          for (var i = monument.linkedData.images.length - 1; i >= 0; i--) {
+            var imageUrl = monument.linkedData.images[i]
+
+            slider.append("<img src='" + imageUrl + "'>")
+          }
+
+          slider.appendTo(popContent)
+        }
       } else {
-        //popContent.append($('<p>Sadly no more information is available on this</p>'))
-        console.warn('received monument data without linked data :(')
+        console.log('received monument data without linked data :(')
       }
 
       markerPop.setContent(popContent[0])
@@ -47,10 +64,11 @@ function lookForMonumentsAt(lat, long) {
     })
   })
 }
+
 function onMapClick(e) {
   var popupCoordinates = e.latlng
 
-  var popupContent = $('<div><h3>123 monuments around here</h3></div>')
+  var popupContent = $('<div><p>123 monuments around here</p></div>')
   var searchButton = $("<button>Show them</button>")
 
   searchButton.click( function(){
@@ -71,6 +89,7 @@ var popup = L.popup()
 var monumentMarkers = L.featureGroup()
 var currentPositionMarker = null
 
+map.doubleClickZoom.disable()
 L.control.zoom({ position: 'bottomright' }).addTo(map)
 L.control.locate({
   position: 'bottomright',
@@ -88,7 +107,7 @@ L.control.locate({
   },
   onLocationError: function(err) {
     map.setView([52.514034, 13.405692], 15)
-    alert(err.message);
+    //alert(err.message);
   }
 }).addTo(map).start()
 
