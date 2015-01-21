@@ -1,5 +1,6 @@
 var http = require('http');
 var request = require('request')
+var sparql = require("sparql")
 
 var crawledWikis = {}
 var wikiLinks = [
@@ -168,7 +169,7 @@ var regIds  = /<td rowspan.*id="\d{8}|<span.*id="\d{8}/g
 var regImages = /src=".*\.jpg"/gi
 var possibleLink = /<td[\s\S]*?<\/td>/
 var containedLinks = /<a.*<\/a/g
-var getLinkAim = /href=".*?"/
+var getLinkAim = /href=".*?"/g
 var linkExtract = /\/.*?" /
 var columnsRegex = /<td.*<\/td/g
 //Regex for Senatsseite Berlin
@@ -203,14 +204,20 @@ function getLinkForId(id, url, html, topCallback){
       var imgLinks = getImageForId(id, monumentHtml)
       linkedData.images = imgLinks
 
+      //Parse all Links of Monument of tablerow
+      var links = getLinksOfTableRow(monumentHtml)
+
       //Parse for possible Wikidata Link
-      var wikiDataLink = getLinkFromHtml(monumentHtml)
-      if(wikiDataLink)
-        linkedData.wikiDataLink = wikiDataLink
+      if(links[2])
+        linkedData.wikiDataLink =  links["2"]
+
+      //Evaluate Descriptionlinks (3rd column) for possible architects
+      if(links[3]){
+        var architects = parseLinksForArchitects(links[3])
+      }
 
       crawledWikis[id] = 0
 
-      console.log(linkedData)
       request(linkedData.link, function (error, response, body) {
         var indexStartHtml = body.search(id)
         body = body.slice(indexStartHtml)
@@ -273,49 +280,73 @@ var getYearOfConstruction = function(html){
   return null
 }
 
-var getLinkFromHtml = function(html){
+var getLinksOfTableRow = function(html){
   try{
-      /*var nextColumn = html.match(possibleLink)[0]
-      if(nextColumn.match(/a/).length == 1) {
+    var links = html.match(containedLinks)
 
-        var link = nextColumn.match(linkExtract)
-        link = link[0].slice(0, link.length - 3)
-        if(link.slice(-3).match(/jpg|png|gif/))
-          link = null
-        else
-          link = "http://www.dbpedia.org" + link.replace("wiki", "page")
-        return link*/
-
-      var links = html.match(containedLinks)
-
-      var points = []
-      for(var i= 0; i<links.length; i++){
-        var link = links[i]
-        var url = link.match(getLinkAim)[0]
-        url = url.slice(6, url.length-1)
+    var points = []
+    for(var i= 0; i<links.length; i++){
+      var link = links[i]
+      var url = link.match(getLinkAim)
+      for(var l=0; l<url.length ; l++){
+        url[l] = url[l].slice(6, url[l].length-1)
         //if(url.indexOf("/wiki/") == 0)
         //  url = "http://de.wikipedia.org" + url
-        points.push(url)
+        points.push(url[l])
       }
-      //console.log(points)
 
-      var columns = html.match(columnsRegex)
-      var columnsLinks = {}
+    }
 
-      for(var j=0; j<columns.length ; j++){
-            for(var k=0; k<points.length; k++){
-              var index = columns[j].indexOf(points[k])
-              if(index > -1){
-                columnsLinks[j+2] = points[k]
-              }
-            }
+    var columns = html.match(columnsRegex)
+    var columnsLinks = {}
+
+    for(var j=0; j<columns.length ; j++){
+      for(var k=0; k<points.length; k++){
+        var index = columns[j].indexOf(points[k])
+        if(index > -1){
+          if(columnsLinks[j+2]) {
+            if (!Array.isArray(columnsLinks[j + 2])) {
+              columnsLinks[j + 2] = [columnsLinks[j + 2], points[k]]
+            } else
+              columnsLinks[j + 2].push(points[k])
+          }else
+            columnsLinks[j+2] = points[k]
+        }
       }
-     console.log(columnsLinks)
-     if(columnsLinks[2])
-      return "http://de.wikipedia.org" + columnsLinks["2"]
+    }
+
+    for(var key in columnsLinks){
+      if(!Array.isArray(columnsLinks[key]))
+        columnsLinks[key] = "http://de.dbpedia.org" + columnsLinks[key].replace("wiki", "page")
+      else
+        for(var j=0; j<columnsLinks[key].length; j++){
+          columnsLinks[key][j] = "http://de.dbpedia.org" + columnsLinks[key][j].replace("wiki", "page")
+        }
+    }
+
+    return columnsLinks
+  }catch(error){
+    console.log("Error While Parsing Links for ID")
+  }
+
+}
+
+var parseLinksForArchitects = function(wikipediaLink, callback){
+  try{
+
+    request('http://de.dbpedia.org/resource/Werner_March', function (error, response, body) {
+      console.log(body)
+    })
+
+
+
+    /*var client = new sparql.Client("http://dbpedia.org/sparql")
+    client.query('select * where { ?s ?p ?o } limit 100', function(err, res){
+     console.log(res.results.bindings[15])
+    })*/
 
     }catch(err){
-      console.log("Error while parsing for WikiData_link: " + err)
+      console.log("Error while parsing descriptionLinks for Architects: " + err)
     }
 
 
