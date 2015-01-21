@@ -1,6 +1,10 @@
 html, body
   width 100%
   height 100%
+  font-family 'Open Sans', sans-serif
+
+h1, h2, h3, h4, h5
+  font-family 'Josefin Sans', sans-serif
 
 #map
   height 100%
@@ -9,9 +13,22 @@ html, body
 #searchBar
   position absolute
   top 2em
-  left 2em
   z-index 1000
-  width 70%
+
+  @media screen and (max-width: 680px)
+    left 15%
+    width 70%
+  @media screen and (min-width: 680px)
+    left 5%
+    width 80%
+
+.slider
+  overflow-x hidden
+  overflow-y auto
+  height 400px
+
+.slider img
+  max-height 395px
 
 // locate control css
 .leaflet-touch .leaflet-bar-part-single
