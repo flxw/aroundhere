@@ -13,9 +13,14 @@ h1, h2, h3, h4, h5
 #searchBar
   position absolute
   top 2em
-  left 2em
   z-index 1000
-  width 70%
+
+  @media screen and (max-width: 680px)
+    left 15%
+    width 70%
+  @media screen and (min-width: 680px)
+    left 5%
+    width 80%
 
 .slider
   overflow-x hidden
