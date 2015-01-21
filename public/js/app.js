@@ -7,62 +7,84 @@ function lookForMonumentsAt(lat, long) {
     distance: 200
   }
 
-  $.getJSON('/getNearMonuments', parameters, function(data, status, xhr) {
-    monumentMarkers.clearLayers()
-
-    data.forEach(function(monument, monumentIndex) {
-      var marker = L.marker(monument.geolocation.coordinates, {
-        title: monument.formatted,
-        riseOnHover: true,
-        maxWidth: 400
-      })
-
-      var markerPop = L.popup({
-        closeOnClick: true,
-        closeButton: false,
-      })
-
-      var popContent = $('<div></div>')
-
-      if (monument.linkedData) {
-        popContent.append('<h3>#' + monument.linkedData.monumentId + '</h3>')
-      } else {
-        popContent.append('<h3>#' + monument.formatted + '</h3>')
-      }
-
-      if (monument.description !== "") {
-        popContent.append($('<p>' + monument.description + '</p>'))
-      }
-
-      if (monument.linkedData) {
-        if (monument.linkedData.yearOfConstruction) {
-          popContent.append($('<p>Built in ' + monument.linkedData.yearOfConstruction + '</p>'))
-        }
-
-        if (monument.linkedData.link) {
-          popContent.append($('<a href="' + monument.linkedData.link + '">More info here</a>'))
-        }
-
-        if (monument.linkedData.images) {
-          var slider = $("<div class='slider'></div>")
-
-          for (var i = monument.linkedData.images.length - 1; i >= 0; i--) {
-            var imageUrl = monument.linkedData.images[i]
-
-            slider.append("<img src='" + imageUrl + "'>")
-          }
-
-          slider.appendTo(popContent)
-        }
-      } else {
-        console.log('received monument data without linked data :(')
-      }
-
-      markerPop.setContent(popContent[0])
-      marker.bindPopup(markerPop)
-      monumentMarkers.addLayer(marker)
-    })
+  $.ajax({
+    type: 'GET',
+    url: '/getNearMonuments',
+    data: parameters,
+    dataType: 'json',
+    timeout: 300,
+    context: null,
+    success: thisIsRussia,
+    error: noOneTalksToTheMachineLikeThat
   })
+
+  $.getJSON('/getNearMonuments', parameters, thisIsRussia)
+}
+
+function thisIsRussia (data) {
+  monumentMarkers.clearLayers()
+  map.closePopup()
+
+  data.forEach(function(monument, monumentIndex) {
+    var marker = L.marker(monument.geolocation.coordinates, {
+      title: monument.formatted,
+      riseOnHover: true,
+      maxWidth: 400
+    })
+
+    var markerPop = L.popup({
+      closeOnClick: true,
+      closeButton: false,
+    })
+
+    var popContent = $('<div></div>')
+
+    if (monument.linkedData) {
+      popContent.append('<h3>#' + monument.linkedData.monumentId + '</h3>')
+    } else {
+      popContent.append('<h3>' + monument.formatted + '</h3>')
+    }
+
+    if (monument.description !== "") {
+      popContent.append($('<p>' + monument.description + '</p>'))
+    }
+
+    if (monument.linkedData) {
+      if (monument.linkedData.yearOfConstruction) {
+        popContent.append($('<p>Built in ' + monument.linkedData.yearOfConstruction + '</p>'))
+      }
+
+      if (monument.linkedData.link) {
+        popContent.append($('<a href="' + monument.linkedData.link + '">More info here</a>'))
+      }
+
+      if (monument.linkedData.images) {
+        var slider = $("<div class='slider'></div>")
+
+        for (var i = monument.linkedData.images.length - 1; i >= 0; i--) {
+          var imageUrl = monument.linkedData.images[i]
+
+          slider.append("<img src='" + imageUrl + "'>")
+        }
+
+        slider.appendTo(popContent)
+      }
+    } else {
+      console.log('received monument data without linked data :(')
+    }
+
+    markerPop.setContent(popContent[0])
+    marker.bindPopup(markerPop)
+    monumentMarkers.addLayer(marker)
+  })
+}
+
+function noOneTalksToTheMachineLikeThat(e) {
+  var pc = $('button').parent()
+
+  if (pc.children().length < 3) {
+    pc.append('<p> Server does not answer...</p>')
+  }
 }
 
 function onMapClick(e) {
