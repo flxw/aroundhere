@@ -1,6 +1,7 @@
 var http = require('http');
 var request = require('request')
 var sparql = require("sparql")
+var jsonld = require("jsonld")
 
 var crawledWikis = {}
 var wikiLinks = [
@@ -180,8 +181,11 @@ var tagContent = />.*</
 var monumentsTypeRegex = /Denkmalart:/
 
 function getLinkForId(id, url, html, topCallback){
+    try{
+
     var index = html.search(id)
     var linkedData = {}
+    var waitFor = 0
 
     if(index > -1) {
       console.log("   Match found in " + url)
@@ -213,7 +217,25 @@ function getLinkForId(id, url, html, topCallback){
 
       //Evaluate Descriptionlinks (3rd column) for possible architects
       if(links[3]){
-        var architects = parseLinksForArchitects(links[3])
+        waitFor++
+
+        parseLinksForArchitects(links[3], function(data){
+          linkedData.architects = []
+          var count = 0
+          var sync = function(){
+            count += 1
+            if(data.length == count)
+              waitFor--
+          }
+
+          data.forEach(function(architect){
+            getInfosForArchitect(architect, function(info){
+              linkedData.architects.push(info)
+              sync()
+            })
+          })
+
+        })
       }
 
       crawledWikis[id] = 0
@@ -231,6 +253,8 @@ function getLinkForId(id, url, html, topCallback){
           linkedData.typeOfMonument = type
 
         linkedData.monumentId = id
+
+        while(waitFor > 0){}
         topCallback(linkedData)
       })
 
@@ -242,6 +266,9 @@ function getLinkForId(id, url, html, topCallback){
       //console.log("No Match found in " + url)
     }
 
+    }catch(error){
+
+    }
 
 }
 
@@ -278,6 +305,11 @@ var getYearOfConstruction = function(html){
     console.log("Error at YearOfConstruction: " + error)
   }
   return null
+}
+
+var officialDescription = function(){
+  var columns = html.match(columnsRegex)
+  console.log(columns[1])
 }
 
 var getLinksOfTableRow = function(html){
@@ -334,24 +366,76 @@ var getLinksOfTableRow = function(html){
 var parseLinksForArchitects = function(wikipediaLink, callback){
   try{
 
-    request('http://de.dbpedia.org/resource/Werner_March', function (error, response, body) {
-      console.log(body)
+    var architects = []
+    var countReplys = 0
+
+    var sync = function(){
+      countReplys += 1
+      if(countReplys == wikipediaLink.length){
+        callback(architects)
+      }
+    }
+    wikipediaLink.forEach(function(link){
+      getPropertyForEntity(link, "rdfs:comment", function(data, url){
+        var regex = /architekt/i
+        var match = data.match(regex)
+        if( match )
+          architects.push(url)
+        sync()
+      })
     })
 
-
-
-    /*var client = new sparql.Client("http://dbpedia.org/sparql")
-    client.query('select * where { ?s ?p ?o } limit 100', function(err, res){
-     console.log(res.results.bindings[15])
-    })*/
 
     }catch(err){
       console.log("Error while parsing descriptionLinks for Architects: " + err)
     }
+}
 
+var getPropertyForEntity = function(url, property, handleData){
+    _url = url.split("/")
+    var entity = _url[_url.length-1]
 
+    var client = new sparql.Client("http://dbpedia.org/sparql")
+    client.query('select*{dbpedia:' + entity + " " + property +' ?label}', function(err, res){
+      var value = ""
+      try{
+        var diffLanguages = res.results.bindings
+        for(var i=0; i<diffLanguages.length; i++){
+          if(diffLanguages[i].label["xml:lang"] == "de" || diffLanguages[i].label["xml:lang"] == "en"){
+            value = diffLanguages[i].label.value
+            break
+          }
+        }
+      }catch(error){
+        console.log("\t Error on parsing from dbpedia")
+      }
 
-  return null
+      handleData(value, url, property)
+    })
+
+}
+
+var getInfosForArchitect = function(url, handleData){
+  var properties = {
+    "dbo:thumbnail": "image",
+    "foaf:name": "name",
+    "prop-de:geburtsdatum": "geboren",
+    "dc:description": "beschreibung"
+  }
+  var info = {url: url}
+  var count = 4
+
+  for(var key in properties){
+    getPropertyForEntity(url, key, function(value, url, property){
+      count = count - 1
+      info[properties[property]] = value
+      if(count == 0){
+        handleData(info)
+      }
+
+    })
+  }
+
 }
 
 var getImageForId = function(id, html){
