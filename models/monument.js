@@ -1,4 +1,5 @@
 var mongoose = require('mongoose')
+var textSearch = require('mongoose-text-search')
 
 var monumentSchema = new mongoose.Schema({
   _id: String,
@@ -8,6 +9,9 @@ var monumentSchema = new mongoose.Schema({
   linkedData: String,
   lastUpdate: String
 })
+
+monumentSchema.plugin(textSearch)
+monumentSchema.index({description: 'text'})
 
 module.exports = mongoose.model('Monument', monumentSchema)
 

@@ -17,6 +17,12 @@ var init = function(app){
         db.handleRequest(res, "nearby", data, dbCallback)
     })
 
+    app.get("/search", function(req, res){
+        var data = req.query
+        console.log(data)
+        db.handleRequest(res, "search", data, dbCallback)
+    })
+
     app.get("/monument/*", function(req, res){
         var url = modUrl.parse(req.url)
         var routeElem = getRoutes(url.pathname)

@@ -107,6 +107,13 @@ var requests = {
                 })
         })
 
+    },
+
+    search: function(reqData, callback, res){
+        monumentSchema.textSearch(reqData.query, function(err, output){
+            console.log(output)
+            callback(res, null, output.results)
+        })
     }
 }
 
@@ -120,6 +127,9 @@ var requestData = {
     monument:{
         monumentId: null,
         type: "rdf"
+    },
+    search:{
+        query: null
     }
 
 }
