@@ -15,6 +15,9 @@ h1, h2, h3, h4, h5
   top 2em
   z-index 1000
 
+  input
+    width 80%
+
   @media screen and (max-width: 680px)
     left 15%
     width 70%
@@ -30,7 +33,7 @@ h1, h2, h3, h4, h5
 .slider img
   max-width 300px
 
-// locate control css
+//  control css
 .leaflet-touch .leaflet-bar-part-single
   -webkit-border-radius 7px 7px 7px 7px
   border-radius 7px 7px 7px 7px
@@ -42,7 +45,8 @@ h1, h2, h3, h4, h5
   background-clip padding-box
 
 
-.leaflet-control-locate a
+.leaflet-control-locate a,
+.leaflet-control-filter a
   font-size 1.4em
   margin-left 1px
   color #444
@@ -52,3 +56,9 @@ h1, h2, h3, h4, h5
 
 .leaflet-control-locate.active.following a
   color #FC8428
+
+.leaflet-control-filter.active a
+  color #FC8428
+
+.leaflet-control-filter.ready a
+  color #2074B6
