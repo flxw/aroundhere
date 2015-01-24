@@ -2,52 +2,56 @@
 
 // custom settings control
 L.Control.Filter = L.Control.extend({
-    options: {
-        position: 'bottomright',
-        icon: 'fa fa-filter',
-        strings: {
-          title: 'Filter the results'
-        }
+  options: {
+    position: 'bottomright',
+    icon: 'fa fa-filter',
+    strings: {
+      title: 'Filter the results'
     },
+  },
 
-    onAdd: function (map) {
-      this._container = L.DomUtil.create('div', 'leaflet-control-filter leaflet-bar leaflet-control');
+  onAdd: function (map) {
+    this._container = L.DomUtil.create('div', 'leaflet-control-filter leaflet-bar leaflet-control');
 
-      this._link = L.DomUtil.create('a', 'leaflet-bar-part leaflet-bar-part-single', this._container);
-      this._link.href = '#';
-      this._link.title = this.options.strings.title;
-      this._icon = L.DomUtil.create('span', this.options.icon, this._link);
+    this._link = L.DomUtil.create('a', 'leaflet-bar-part leaflet-bar-part-single', this._container);
+    this._link.href = '#';
+    this._link.title = this.options.strings.title;
+    this._icon = L.DomUtil.create('span', this.options.icon, this._link);
 
-      this._active = false
-      this._ready  = false
+    this._active = false
+    this._ready  = false
 
-      L.DomEvent
-        .on(this._link, 'click', L.DomEvent.stopPropagation)
-        .on(this._link, 'click', L.DomEvent.preventDefault)
-        .on(this._link, 'click', function() { this.toggle() }, this)
-        .on(this._link, 'dblclick', L.DomEvent.stopPropagation);
+    L.DomEvent
+    .on(this._link, 'click', L.DomEvent.stopPropagation)
+    .on(this._link, 'click', L.DomEvent.preventDefault)
+    .on(this._link, 'click', function() { this.toggle() }, this)
+    .on(this._link, 'dblclick', L.DomEvent.stopPropagation);
 
-      return this._container;
-    },
+    return this._container;
+  },
 
-    toggle: function() {
-      if (this._active) {
-        L.DomUtil.removeClasses(this._container, "active")
-        console.log('should close popup box now')
-      } else if (this._ready) {
-        console.log('should open popup now')
-      }
-    },
-
-    setReady: function(b) {
-      this._ready = b
-
-      if (b) {
-        L.DomUtil.addClasses(this._container, "ready")
-      } else {
-        L.DomUtil.removeClasses(this._container, "ready")
-      }
+  toggle: function() {
+    if (this._active) {
+      L.DomUtil.addClasses(this._container, "ready")
+      L.DomUtil.removeClasses(this._container, "active")
+      hideSettingsPanel()
+    } else if (this._ready) {
+      L.DomUtil.removeClasses(this._container, "ready")
+      L.DomUtil.addClasses(this._container, "active")
+      showSettingsPanel()
     }
+    this._active = !this._active
+  },
+
+  setReady: function(b) {
+    this._ready = b
+
+    if (b) {
+      L.DomUtil.addClasses(this._container, "ready")
+    } else {
+      L.DomUtil.removeClasses(this._container, "ready")
+    }
+  }
 });
 
 L.control.filter = function (options) {
@@ -159,6 +163,14 @@ function onMapClick(e) {
   .openOn(map);
 }
 
+function showSettingsPanel() {
+  settingsPanel.show()
+}
+
+function hideSettingsPanel() {
+  settingsPanel.hide()
+}
+
 // map setup
 var map = L.map('map', { zoomControl: false })
 var popup = L.popup()
@@ -166,11 +178,13 @@ var monumentMarkers = L.featureGroup()
 var currentPositionMarker = null
 var latestResults = null
 var filterControl = L.control.filter()
+var settingsPanel = $('#settingsPanel')
 
 map.doubleClickZoom.disable()
 L.control.zoom({ position: 'bottomright' }).addTo(map)
 L.control.locate({
   position: 'bottomright',
+  showPopup: false,
   drawCircle: false,
   follow: true,
   stopFollowingOnDrag: true,
@@ -230,3 +244,6 @@ $('#searchButton').click(function(event) {
     error: noOneTalksToTheMachineLikeThat
   })
 })
+
+// settings panel setup
+filterControl.setReady(true)
