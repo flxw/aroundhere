@@ -49,7 +49,7 @@ var requests = {
                     var update = monument.belongsToMonument.lastUpdate == "" ||
                         (new Date(Date.now()).getTime() - monument.belongsToMonument.lastUpdate) /  (1000*3600*24) > 14
                     //Dont update the same id more than one time at once
-                    if(update && !(updatedIds.indexOf(monument.belongsToMonument._id) > -1)) {
+                    if(true ){//update && !(updatedIds.indexOf(monument.belongsToMonument._id) > -1)) {
                         console.log("Update Monument with id: " + monument.belongsToMonument._id)
                         updatedIds.push(monument.belongsToMonument._id)
                         linkData.linkData(monument.belongsToMonument._id, function (data) {

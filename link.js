@@ -375,6 +375,7 @@ var parseLinksForArchitects = function(wikipediaLink, callback){
         callback(architects)
       }
     }
+
     wikipediaLink.forEach(function(link){
       getPropertyForEntity(link, "rdfs:comment", function(data, url){
         var regex = /architekt/i
@@ -395,8 +396,8 @@ var getPropertyForEntity = function(url, property, handleData){
     _url = url.split("/")
     var entity = _url[_url.length-1]
 
-    var client = new sparql.Client("http://dbpedia.org/sparql")
-    client.query('select*{dbpedia:' + entity + " " + property +' ?label}', function(err, res){
+    var client = new sparql.Client("http://de.dbpedia.org/sparql")
+    client.query('select*{dbpedia-de:' + entity + " " + property +' ?label}', function(err, res){
       var value = ""
       try{
         var diffLanguages = res.results.bindings
@@ -415,26 +416,43 @@ var getPropertyForEntity = function(url, property, handleData){
 
 }
 
-var getInfosForArchitect = function(url, handleData){
-  var properties = {
-    "dbo:thumbnail": "image",
-    "foaf:name": "name",
-    "prop-de:geburtsdatum": "geboren",
-    "dc:description": "beschreibung"
-  }
-  var info = {url: url}
-  var count = 4
+var performSPARQL = function(query, handleData){
 
-  for(var key in properties){
-    getPropertyForEntity(url, key, function(value, url, property){
-      count = count - 1
-      info[properties[property]] = value
-      if(count == 0){
-        handleData(info)
+  var client = new sparql.Client("http://de.dbpedia.org/sparql")
+  client.query(query, function(err, res){
+    var value = {}
+    try{
+      var values = res.results.bindings[0]
+      for(var key in values){
+        value[key] = values[key].value
       }
+    }catch(error){
+      console.log("\t Error on parsing from dbpedia")
+    }
 
-    })
-  }
+    handleData(value)
+  })
+
+}
+
+var getInfosForArchitect = function(url, handleData){
+  _url = url.split("/")
+  var architect = _url[_url.length-1]
+  var query = "PREFIX dbo: <http://dbpedia.org/ontology/>" +
+      "select*{"+
+      "dbpedia-de:" + architect + " rdfs:comment ?comment."+
+      "dbpedia-de:" + architect + " foaf:name ?name."+
+      "dbpedia-de:" + architect + " dbo:birthDate ?birth."+
+      "dbpedia-de:" + architect + " dbo:deathDate ?death."+
+      "dbpedia-de:" + architect + " dbo:abstract ?abstract."+
+      "}"
+
+
+  performSPARQL(query, function(info){
+    info.url = url
+    console.log(info)
+    handleData(info)
+  })
 
 }
 
