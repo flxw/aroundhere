@@ -68,6 +68,12 @@ var requests = {
                                 })
                             }
 
+                            if(data.label){
+                                db.monuments.update({_id: data.monumentId}, {$set: {label: data.label}}, function(err, updated){
+                                    if( err || !updated ) console.log(err);
+                                })
+                            }
+
                         })
 
                     }else
@@ -79,9 +85,11 @@ var requests = {
                     realDic.linkedData = monument.belongsToMonument.linkedData
                     if(realDic.linkedData != "")
                         realDic.linkedData = JSON.parse(realDic.linkedData)
+                    realDic.label = monument.belongsToMonument.label
                     realDic.description = monument.belongsToMonument.description
                     realDic.formatted = monument.formatted
                     realDic.geolocation = monument.geolocation
+
 
                     monumentReply.push(realDic)
 
@@ -135,6 +143,7 @@ var requests = {
                     formattedObject.linkedData = currMonument.linkedData
                     if(formattedObject.linkedData != "")
                         formattedObject.linkedData = JSON.parse(formattedObject.linkedData)
+                    formattedObject.label = currMonument.label
                     formattedObject.description = currMonument.description
                     formattedObject.addresses = []
                     for(var k=0; k<currMonument.addresses.length; k++) {

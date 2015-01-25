@@ -214,6 +214,10 @@ function getLinkForId(id, url, html, topCallback){
       if(monumentDescription)
         linkedData.description = monumentDescription
 
+      var monumentLabel = getMonumentLabel(monumentHtml)
+      if(monumentLabel)
+        linkedData.label = monumentLabel
+
       //Parse for possible Wikidata Link
       if(links[2])
         linkedData.wikiDataLink =  links["2"]
@@ -478,12 +482,24 @@ var getImageForId = function(id, html){
 var getMonumentDescription = function(html){
   try{
     var columns = getTableColumns(html)
+    if(columns[1]){
+      return columns[1]
+    }else
+      return null
+  }catch(error){
+    console.log("Error while Parsing MonumentDescription")
+  }
+}
+
+var getMonumentLabel = function(html){
+  try{
+    var columns = getTableColumns(html)
     if(columns[0]){
       return columns[0]
     }else
       return null
   }catch(error){
-    console.log("Error while Parsing MonumentDescription")
+    console.log("Error while Parsing MonumentLable")
   }
 }
 
