@@ -12,6 +12,7 @@ var monumentSchema = require('./models/monument.js')
 mongoose.connect(config.db.url)
 var collections = ["addresses", "monuments"]
 var db = mongojs.connect(config.db.url, collections);
+var updatedIds = []
 
 var requests = {
     nearby: function(reqData, callback, res){
@@ -41,7 +42,7 @@ var requests = {
                     //res.json([])
                 }
 
-                var updatedIds = []
+
                 for(var i = 0; i<docs.length; i++){
                     var monument = docs[i]
                     //console.log("Link data for " + monument.belongsToMonument._id)
@@ -49,7 +50,7 @@ var requests = {
                     var update = monument.belongsToMonument.lastUpdate == "" ||
                         (new Date(Date.now()).getTime() - monument.belongsToMonument.lastUpdate) /  (1000*3600*24) > 14
                     //Dont update the same id more than one time at once
-                    if(true ){//update && !(updatedIds.indexOf(monument.belongsToMonument._id) > -1)) {
+                    if(!(updatedIds.indexOf(monument.belongsToMonument._id) > -1) ){//&& update) {
                         console.log("Update Monument with id: " + monument.belongsToMonument._id)
                         updatedIds.push(monument.belongsToMonument._id)
                         linkData.linkData(monument.belongsToMonument._id, function (data) {
@@ -57,6 +58,9 @@ var requests = {
 
                             db.monuments.update({_id: data.monumentId}, {$set: {linkedData: JSON.stringify(data), lastUpdate: date}}, function(err, updated){
                                 if( err || !updated ) console.log(err);
+                                console.log("\t" + data.monumentId + " monument updated")
+                                var index = updatedIds.indexOf(data.monumentId)
+                                updatedIds.splice(index, 1)
                             })
                             if(data.description){
                                 db.monuments.update({_id: data.monumentId}, {$set: {description: data.description}}, function(err, updated){

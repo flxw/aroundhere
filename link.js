@@ -5,8 +5,6 @@ var jsonld = require("jsonld")
 
 var crawledWikis = {}
 var wikiLinks = [
-  "http://de.wikipedia.org/wiki/Liste_der_Kulturdenkmale_in_Berlin-Wilmersdorf",
-
   "http://de.wikipedia.org/wiki/Liste_der_Kulturdenkmale_in_Berlin-Charlottenburg",
   "http://de.wikipedia.org/wiki/Liste_der_Kulturdenkmale_in_Berlin-Mitte",
   "http://de.wikipedia.org/wiki/Liste_der_Kulturdenkmale_in_Berlin-Mitte/Alexanderplatz",
@@ -145,7 +143,7 @@ function sync(id, topCallback){
 function crawlURL(url, callback, id, topCallback){
   //console.log("Crawling for id: " + id + " following url \n" + url)
   if(url in crawledSites) {
-    callback(url + " already crawled")
+    //callback(url + " already crawled")
     callback(id, url, crawledSites[url], topCallback);
   }else {
     http.get(url, function (res) {
@@ -243,7 +241,7 @@ function getLinkForId(id, url, html, topCallback){
         })
       }
 
-      crawledWikis[id] = 0
+
 
       request(linkedData.link, function (error, response, body) {
         var indexStartHtml = body.search(id)
@@ -260,6 +258,7 @@ function getLinkForId(id, url, html, topCallback){
         linkedData.monumentId = id
 
         while(waitFor > 0){}
+        crawledWikis[id] = 0
         topCallback(linkedData)
       })
 
@@ -455,7 +454,6 @@ var getInfosForArchitect = function(url, handleData){
 
   performSPARQL(query, function(info){
     info.url = url
-    console.log(info)
     handleData(info)
   })
 
