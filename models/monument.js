@@ -12,6 +12,7 @@ var monumentSchema = new mongoose.Schema({
 
 monumentSchema.plugin(textSearch)
 monumentSchema.index({description: 'text'})
+monumentSchema.index({linkedData: 'text'})
 
 module.exports = mongoose.model('Monument', monumentSchema)
 

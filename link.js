@@ -173,6 +173,7 @@ var containedLinks = /<a.*<\/a/g
 var getLinkAim = /href=".*?"/g
 var linkExtract = /\/.*?" /
 var columnsRegex = /<td.*<\/td/g
+var allTags = /<.*?>/g
 //Regex for Senatsseite Berlin
 var yearOfConstructionRegex = /num-Dat.:.*<td/i
 var getDate = /\d{4}/
@@ -210,6 +211,10 @@ function getLinkForId(id, url, html, topCallback){
 
       //Parse all Links of Monument of tablerow
       var links = getLinksOfTableRow(monumentHtml)
+
+      var monumentDescription = getMonumentDescription(monumentHtml)
+      if(monumentDescription)
+        linkedData.description = monumentDescription
 
       //Parse for possible Wikidata Link
       if(links[2])
@@ -472,6 +477,38 @@ var getImageForId = function(id, html){
   }
 }
 
+var getMonumentDescription = function(html){
+  try{
+    var columns = getTableColumns(html)
+    if(columns[0]){
+      return columns[0]
+    }else
+      return null
+  }catch(error){
+    console.log("Error while Parsing MonumentDescription")
+  }
+}
+
+var getTableColumns = function(html){
+  try{
+
+    var columns = html.match(columnsRegex)
+    var newColumns = []
+    for(var i=0; i<columns.length; i++){
+        var currColumn = columns[i]
+        var noContent = currColumn.match(allTags)
+        for(var j=0; j<noContent.length; j++){
+          currColumn = currColumn.replace(noContent[j], "")
+        }
+        currColumn = currColumn.replace("</td", "")
+        newColumns.push(currColumn)
+    }
+
+    return newColumns
+  }catch(error){
+    console.log("Error while Parsing TableColumns' content")
+  }
+}
 
 //look for next id
 var getNextId = function(id, html){

@@ -58,6 +58,12 @@ var requests = {
                             db.monuments.update({_id: data.monumentId}, {$set: {linkedData: JSON.stringify(data), lastUpdate: date}}, function(err, updated){
                                 if( err || !updated ) console.log(err);
                             })
+                            if(data.description){
+                                db.monuments.update({_id: data.monumentId}, {$set: {description: data.description}}, function(err, updated){
+                                    if( err || !updated ) console.log(err);
+                                })
+                            }
+
                         })
 
                     }else
