@@ -80,9 +80,8 @@ function lookForMonumentsAt(lat, long) {
   $.getJSON('/getNearMonuments', parameters, thisIsRussia)
 }
 
-function thisIsRussia(data) {
+function displayMonumentsOnMap(data) {
   monumentMarkers.clearLayers()
-  map.closePopup()
 
   data.forEach(function(monument, monumentIndex) {
     var marker = L.marker(monument.geolocation.coordinates, {
@@ -138,34 +137,49 @@ function thisIsRussia(data) {
   })
 }
 
-function thisIsUkraine(data) {
+function preprocessSearchResults(data) {
   for (var i = data.length - 1; i >= 0; i--) {
     data[i].formatted = data[i].addresses[0].formatted
     data[i].geolocation = data[i].addresses[0].geolocation
   }
 
-  thisIsRussia(data)
+  displayMonumentsOnMap(data)
 }
 
 function noOneTalksToTheMachineLikeThat(e) {
-  var pc = $('button').parent()
+  snackBar.show()
 
-  if (pc.children().length < 3) {
-    pc.append('<p> Server does not answer...</p>')
-  }
+  map.closePopup()
+  snackBar.find('p').text('The server does not answer')
+
+  window.setTimeout(function() {
+    snackBar.hide()
+  }, 5000)
 }
 
 function onMapClick(e) {
   var popupCoordinates = e.latlng
+  var popupContent = $('<div><p>Looking up nearby monuments...</p></div>')
 
-  var popupContent = $('<div><p>123 monuments around here</p></div>')
-  var searchButton = $("<button>Show them</button>")
+  var parameters = {
+    longitude: e.latlng.lng,
+    latitude: e.latlng.lat,
+    distance: 200
+  }
 
-  searchButton.click( function(){
-    lookForMonumentsAt(popupCoordinates.lat, popupCoordinates.lng)
+  $.ajax({
+    type: 'GET',
+    url: '/getNearMonuments',
+    data: parameters,
+    dataType: 'json',
+    timeout: 300,
+    context: null,
+    success: function(data) {
+      popupContent.find('p').text(data.length + ' monuments around here')
+      displayMonumentsOnMap(data)
+    },
+    error: noOneTalksToTheMachineLikeThat
   })
-
-  searchButton.appendTo(popupContent)
 
   popup
   .setLatLng(popupCoordinates)
@@ -189,6 +203,7 @@ var currentPositionMarker = null
 var latestResults = null
 var filterControl = L.control.filter()
 var settingsPanel = $('#settingsPanel')
+var snackBar = $('.snackbar')
 
 map.doubleClickZoom.disable()
 L.control.zoom({ position: 'bottomright' }).addTo(map)
@@ -250,7 +265,7 @@ $('#searchButton').click(function(event) {
     dataType: 'json',
     timeout: 300,
     context: null,
-    success: thisIsUkraine,
+    success: preprocessSearchResults,
     error: noOneTalksToTheMachineLikeThat
   })
 })
