@@ -224,7 +224,7 @@ function getLinkForId(id, url, html, topCallback){
 
       //Evaluate Descriptionlinks (3rd column) for possible architects
       if(links[3]){
-        waitFor++
+
 
         parseLinksForArchitects(links[3], function(data){
           linkedData.architects = []
@@ -236,6 +236,7 @@ function getLinkForId(id, url, html, topCallback){
           }
 
           data.forEach(function(architect){
+            waitFor++
             getInfosForArchitect(architect, function(info){
               linkedData.architects.push(info)
               sync()
@@ -244,9 +245,7 @@ function getLinkForId(id, url, html, topCallback){
 
         })
       }
-
-
-
+      //Crawl Data from Senatsseite Berlin
       request(linkedData.link, function (error, response, body) {
         var indexStartHtml = body.search(id)
         body = body.slice(indexStartHtml)
@@ -261,7 +260,8 @@ function getLinkForId(id, url, html, topCallback){
 
         linkedData.monumentId = id
 
-        while(waitFor > 0){}
+        while(waitFor > 0){
+        }
         crawledWikis[id] = 0
         topCallback(linkedData)
       })
@@ -413,15 +413,18 @@ var getPropertyForEntity = function(url, property, handleData){
     client.query('select*{dbpedia-de:' + entity + " " + property +' ?label}', function(err, res){
       var value = ""
       try{
-        var diffLanguages = res.results.bindings
-        for(var i=0; i<diffLanguages.length; i++){
-          if(diffLanguages[i].label["xml:lang"] == "de" || diffLanguages[i].label["xml:lang"] == "en"){
-            value = diffLanguages[i].label.value
-            break
+        if(res){
+          var diffLanguages = res.results.bindings
+          for(var i=0; i<diffLanguages.length; i++){
+            if(diffLanguages[i].label["xml:lang"] == "de" || diffLanguages[i].label["xml:lang"] == "en"){
+              value = diffLanguages[i].label.value
+              break
+            }
           }
         }
       }catch(error){
-        console.log("\t Error on parsing from dbpedia")
+        console.log("\t Error on parsing from dbpedia [getPropertyForEntity]" + error)
+        handleData("", url, property)
       }
 
       handleData(value, url, property)
@@ -440,7 +443,7 @@ var performSPARQL = function(query, handleData){
         value[key] = values[key].value
       }
     }catch(error){
-      console.log("\t Error on parsing from dbpedia")
+      console.log("\t Error on parsing from dbpedia [perform Spqrql]")
     }
 
     handleData(value)

@@ -11,8 +11,6 @@ var monumentSchema = new mongoose.Schema({
   lastUpdate: String
 })
 
-//monumentSchema.plugin(textSearch)
-//monumentSchema.index({description: 'text'})
 monumentSchema.index({label: 'text', description: 'text', linkedData: 'text'})
 
 module.exports = mongoose.model('Monument', monumentSchema)
