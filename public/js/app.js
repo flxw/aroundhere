@@ -93,6 +93,9 @@ function displayMonumentsOnMap(data) {
     var markerPop = L.popup({
       closeOnClick: true,
       closeButton: false,
+      autoPanPaddingTopLeft: [50, 100],
+      autoPanPaddingBottomRight: [50, 100],
+      autoPan: true
     })
 
     var popContent = $('<div></div>')
@@ -146,11 +149,11 @@ function preprocessSearchResults(data) {
   displayMonumentsOnMap(data)
 }
 
-function noOneTalksToTheMachineLikeThat(e) {
+function showSnackbarMessage(m) {
   snackBar.show()
 
   map.closePopup()
-  snackBar.find('p').text('The server does not answer')
+  snackBar.find('p').text(m)
 
   window.setTimeout(function() {
     snackBar.hide()
@@ -178,7 +181,9 @@ function onMapClick(e) {
       popupContent.find('p').text(data.length + ' monuments around here')
       displayMonumentsOnMap(data)
     },
-    error: noOneTalksToTheMachineLikeThat
+    error: function(e) {
+      showSnackbarMessage('The server does not answer')
+    }
   })
 
   popup
@@ -224,7 +229,7 @@ L.control.locate({
   },
   onLocationError: function(err) {
     map.setView([52.514034, 13.405692], 15)
-    //alert(err.message);
+    showSnackbarMessage('Unable to determine your location')
   }
 }).addTo(map).start()
 filterControl.addTo(map)
@@ -266,7 +271,9 @@ $('#searchButton').click(function(event) {
     timeout: 300,
     context: null,
     success: preprocessSearchResults,
-    error: noOneTalksToTheMachineLikeThat
+    error: function(e) {
+      showSnackbarMessage('The server does not answer')
+    }
   })
 })
 
