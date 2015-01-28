@@ -384,6 +384,10 @@ var parseLinksForArchitects = function(wikipediaLink, callback){
       }
     }
 
+    if(!Array.isArray(wikipediaLink)){
+      wikipediaLink = [wikipediaLink]
+    }
+
     wikipediaLink.forEach(function(link){
       getPropertyForEntity(link, "rdfs:comment", function(data, url){
         var regex = /architekt/i

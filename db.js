@@ -103,27 +103,24 @@ var requests = {
             })
     },
     monument: function(reqData, callback, res){
-        linkData.linkData(reqData.monumentId, function(data){
-            console.log(reqData.monumentId)
-            monumentSchema
-                .find({_id: reqData.monumentId})
-                .populate('addresses')
-                .exec(function(err, docs){
-                    console.log(err)
-                    console.log(docs)
-                    try {
-                        for (var key in docs[0]) {
-                            data[key] = docs[0][key]
-                        }
-                        console.log(data)
-                    }catch(err){
-                        console.log("Error in Db-Answer: " + err)
+        monumentSchema
+            .find({_id: reqData.monumentId})
+            .populate('addresses')
+            .exec(function(err, docs){
+                console.log(err)
+                console.log(docs)
+                try {
+                    for (var key in docs[0]) {
+                        data[key] = docs[0][key]
                     }
-                    if(reqData.type == 'rdf')
-                        data = rdf.creatRDF(data)
-                    callback(res, null, data)
-                })
-        })
+                    console.log(data)
+                }catch(err){
+                    console.log("Error in Db-Answer: " + err)
+                }
+                if(reqData.type == 'rdf')
+                    data = rdf.creatRDF(data)
+                callback(res, null, data)
+            })
 
     },
 
