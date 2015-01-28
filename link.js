@@ -397,6 +397,7 @@ var parseLinksForArchitects = function(wikipediaLink, callback){
 
     }catch(err){
       console.log("Error while parsing descriptionLinks for Architects: " + err)
+      callback([])
     }
 }
 

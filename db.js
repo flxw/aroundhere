@@ -128,7 +128,7 @@ var requests = {
     },
 
     search: function(reqData, callback, res){
-        monumentSchema
+        /*monumentSchema
             .textSearch(reqData.query, function(err, output){
             var formOut = []
                 for(var j= 0; j<output.results.length; j++ ){
@@ -158,8 +158,38 @@ var requests = {
 
                 callback(res, null, formattedOutput)
             })
-            })
+            })*/
 
+        monumentSchema
+            .find(
+                {$text : { $search: reqData.query} }
+            )
+            .populate("addresses")
+            .exec(function(err, docs) {
+
+                var formattedOutput = []
+                for(var i=0; i<docs.length ; i++){
+                    var currMonument = docs[i]
+                    var formattedObject = {}
+
+                    formattedObject.linkedData = currMonument.linkedData
+                    if(formattedObject.linkedData != "")
+                        formattedObject.linkedData = JSON.parse(formattedObject.linkedData)
+                    formattedObject.label = currMonument.label
+                    formattedObject.description = currMonument.description
+                    formattedObject.addresses = []
+                    for(var k=0; k<currMonument.addresses.length; k++) {
+                        var addressObject = {}
+                        addressObject.formatted = currMonument.addresses[k].formatted
+                        addressObject.geolocation = currMonument.addresses[k].geolocation
+                        formattedObject.addresses.push(addressObject)
+                    }
+
+                    formattedOutput.push(formattedObject)
+                }
+
+                callback(res, null, formattedOutput)
+            });
     }
 }
 
@@ -203,3 +233,11 @@ var confirmData = function(data, request){
 }
 
 exports.handleRequest = handleRequest
+
+//Indexes:
+/*
+
+db.monuments.dropIndex("description_text")
+db.monuments.ensureIndex({label: 'text', description: 'text', linkedData: 'text'})
+
+*/
