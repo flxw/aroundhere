@@ -134,6 +134,7 @@ var linkData = function(id, topCallback){
 function sync(id, topCallback){
   //console.log("Sync, ID " + id + " crawled " + crawledWikis[id] + " of " + wikiLinks.length)
   //console.log("nothing found " + crawledWikis[id] + "/" + wikiLinks.length)
+  crawledWikis[id] += 1
   if(crawledWikis[id] >= wikiLinks.length){
     topCallback({})
   }
@@ -153,7 +154,7 @@ function crawlURL(url, callback, id, topCallback){
 
       });
       res.on("end", function () {
-        crawledWikis[id] += 1
+        //crawledWikis[id] += 1
         crawledSites[url] = data
         callback(id, url, data, topCallback);
       });
@@ -225,11 +226,10 @@ function getLinkForId(id, url, html, topCallback){
       //Evaluate Descriptionlinks (3rd column) for possible architects
       if(links[3]){
 
-
         parseLinksForArchitects(links[3], function(data){
           linkedData.architects = []
           var count = 0
-          var sync = function(){
+          var syncArchitects = function(){
             count += 1
             if(data.length == count)
               waitFor--
@@ -239,7 +239,7 @@ function getLinkForId(id, url, html, topCallback){
             waitFor++
             getInfosForArchitect(architect, function(info){
               linkedData.architects.push(info)
-              sync()
+              syncArchitects()
             })
           })
 
@@ -259,8 +259,9 @@ function getLinkForId(id, url, html, topCallback){
           linkedData.typeOfMonument = type
 
         linkedData.monumentId = id
-
-        while(waitFor > 0){
+        var count = 0
+        while(waitFor > 0 && count < 2000000){
+          count++
         }
         crawledWikis[id] = 0
         topCallback(linkedData)
@@ -269,13 +270,12 @@ function getLinkForId(id, url, html, topCallback){
 
 
     }else{
-
       sync(id, topCallback)
       //console.log("No Match found in " + url)
     }
 
     }catch(error){
-
+      console.log("Error in linkData: " + error)
     }
 
 }
