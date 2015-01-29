@@ -118,7 +118,7 @@ function lookForMonumentsAt(lat, long) {
   var parameters = {
     longitude: long,
     latitude: lat,
-    distance: 200
+    distance: $('input[name="searchRadius"]').val()
   }
 
   $.ajax({
