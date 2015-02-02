@@ -102,6 +102,10 @@ L.Control.Settings = L.Control.extend({
   },
 
   showSettingsPanel: function() {
+    if (filterControl._active) {
+      filterControl.toggle()
+    }
+
     this._settingsPanel.show()
   },
 
@@ -113,27 +117,6 @@ L.Control.Settings = L.Control.extend({
 L.control.settings = function (options) {
     return new L.Control.Settings(options);
 };
-
-function lookForMonumentsAt(lat, long) {
-  var parameters = {
-    longitude: long,
-    latitude: lat,
-    distance: $('input[name="searchRadius"]').val()
-  }
-
-  $.ajax({
-    type: 'GET',
-    url: '/getNearMonuments',
-    data: parameters,
-    dataType: 'json',
-    timeout: 300,
-    context: null,
-    success: thisIsRussia,
-    error: noOneTalksToTheMachineLikeThat
-  })
-
-  $.getJSON('/getNearMonuments', parameters, thisIsRussia)
-}
 
 function displayMonumentsOnMap(data) {
   monumentMarkers.clearLayers()
@@ -196,11 +179,13 @@ function displayMonumentsOnMap(data) {
 }
 
 function preprocessSearchResults(data) {
+
   for (var i = data.length - 1; i >= 0; i--) {
     data[i].formatted = data[i].addresses[0].formatted
     data[i].geolocation = data[i].addresses[0].geolocation
   }
 
+  searchResults = data
   displayMonumentsOnMap(data)
 }
 
@@ -222,7 +207,7 @@ function onMapClick(e) {
   var parameters = {
     longitude: e.latlng.lng,
     latitude: e.latlng.lat,
-    distance: 200
+    distance: $('input[name="searchRadius"]').val()
   }
 
   $.ajax({
@@ -233,6 +218,7 @@ function onMapClick(e) {
     timeout: 300,
     context: null,
     success: function(data) {
+      searchResults = data
       popupContent.find('p').text(data.length + ' monuments around here')
       setupFiltersWith(data)
       displayMonumentsOnMap(data)
@@ -249,11 +235,16 @@ function onMapClick(e) {
 }
 
 function showFilterPanel() {
+  if (settingsControl._active) {
+    settingsControl.toggle()
+  }
+
   filterPanel.show()
 }
 
 function hideFilterPanel() {
   filterPanel.hide()
+  displayMonumentsOnMap(searchResults)
 }
 
 function setupFiltersWith(data) {
@@ -272,8 +263,7 @@ function setupFiltersWith(data) {
 
   var yocFilter = {
     enabled: false,
-    filterElement: '#yearOfConstructionFilter',
-    from: 100000,
+    from: 111111,
     to: 0
   }
 
@@ -283,7 +273,9 @@ function setupFiltersWith(data) {
 
       if (yocFilter.from > filterableMonuments[i].linkedData.yearOfConstruction) {
         yocFilter.from = filterableMonuments[i].linkedData.yearOfConstruction
-      } else if (yocFilter.to < filterableMonuments[i].linkedData.yearOfConstruction) {
+      }
+
+      if (yocFilter.to < filterableMonuments[i].linkedData.yearOfConstruction) {
         yocFilter.to = filterableMonuments[i].linkedData.yearOfConstruction
       }
     }
@@ -293,28 +285,70 @@ function setupFiltersWith(data) {
 }
 
 function initializeYocFilter(opts) {
-  var e = $(opts.filterElement)
-
   if (opts.enabled) {
-    e.show()
+    yocFilterElement.show()
+
+    var from = opts.from
+    var to = opts.to
+
+    yocFilterElement.find('input[name="from"]').val(from)
+    yocFilterElement.find('input[name="from"]').prop('min', from)
+    yocFilterElement.find('input[name="from"]').prop('max', to - 1)
+
+    // zepto does some weird variable mangling here...
+    var from = parseInt(opts.from)
+    var to = parseInt(opts.to)
+
+    yocFilterElement.find('input[name="to"]').val(to)
+    yocFilterElement.find('input[name="to"]').prop('min', from + 1)
+    yocFilterElement.find('input[name="to"]').prop('max', to)
   } else {
-    e.hide()
+    yocFilterElement.hide()
+  }
+}
+
+function applyFilters() {
+  var filteredData = []
+
+  if (isElementVisible(yocFilterElement)) {
+    var fromYoc = parseInt(yocFilterElement.find('input[name="from"]').val())
+    var toYoc   = parseInt(yocFilterElement.find('input[name="to"]').val())
+
+
+    for (var i = searchResults.length - 1; i >= 0; i--) {
+      var currentMonument = searchResults[i]
+
+      if (currentMonument.linkedData) {
+        var yoc = parseInt(currentMonument.linkedData.yearOfConstruction)
+        if (fromYoc <= yoc && yoc <= toYoc) {
+          filteredData.push(currentMonument)
+        }
+      }
+    }
   }
 
-  e.find('input[name="from"]').val(opts.from)
-  e.find('input[name="to"]').val(opts.to)
+  displayMonumentsOnMap(filteredData)
+}
+
+function isElementVisible(e) {
+  return e.css('display') !== 'none'
 }
 
 // map setup
 var map = L.map('map', { zoomControl: false })
 var popup = L.popup()
 var monumentMarkers = L.featureGroup()
-var currentPositionMarker = null
-var latestResults = null
 var filterControl = L.control.filter()
 var settingsControl = L.control.settings()
+
 var filterPanel = $('#filterPanel')
+var settingsPanel = $('#settingsPanel')
 var snackBar = $('.snackbar')
+var yocFilterElement = $('#yearOfConstructionFilter')
+
+var searchResults = []
+var currentPositionMarker = null
+var latestResults = null
 
 map.doubleClickZoom.disable()
 L.control.zoom({ position: 'bottomright' }).addTo(map)
@@ -383,3 +417,6 @@ $('#searchButton').click(function(event) {
     }
   })
 })
+
+// year of construction filter setup
+$('#applyFilterButton').on('click', applyFilters)
