@@ -39,7 +39,7 @@ var dbCallback = function(_res, err, docs){
 }
 
 var rdfCallback = function(_res, err, rdf){
-    _res.set('Content-Type', "text/plain")//'application/x-turtle')
+    _res.set('Content-Type', 'application/x-turtle')
     _res.send(rdf)
 }
 

@@ -11,11 +11,24 @@ var rdfHeader =    "@prefix  rdf:           <http://www.w3.org/1999/02/22-rdf-sy
 
 var rdfBody = ""
 
-var createRDF = function(data){
-    rdfBody = "<http://aroundhere.flxw.de/monument/"+ data._id + ">\n"
-    if(data.description)
-              rdfBody += "\trdfs:label \"" + data.description + "\"\n"
+var createRDF = function(data) {
+    var linkedData = JSON.parse(data.linkedData)
 
+    rdfBody = "<http://aroundhere.flxw.de/monument/" + data._id + ">\n"
+    if (data.label)
+        rdfBody += "\trdfs:label \"" + data.label + "\",\n"
+    if (data.description)
+        rdfBody += "\tdcterms:description \"" + data.description + "\",\n"
+    if (linkedData.link)
+        rdfBody += "\tdcterms:identifier <" + linkedData.link + ">,\n"
+
+    if (linkedData.architects){
+        rdfBody += "\tdbpedia-owl:architect [ \n"
+        for (var j = 0; j < linkedData.architects.length; j++) {
+            rdfBody += "\t\t<" + linkedData.architects[j].url + ">,\n"
+        }
+        rdfBody += "\t ] ,\n"
+    }
     if(data.addresses)
         data.addresses.forEach(function(address){
             console.log(address)
@@ -25,13 +38,16 @@ var createRDF = function(data){
             rdfBody += "\t\tgeo:long\t" + address.geolocation.coordinates[1] + ",\n"
             rdfBody += "\t ] ,\n"
         })
-    if(data.images)
-      data.images.forEach(function(image){
-          rdfBody += "\tdbo:thumbnail <" + image + ">,\n"
-      })
+    if(linkedData.images)
+        for(var i=0; i<linkedData.images.length; i++){
+            var image = linkedData.images[i]
+                rdfBody += "\tdbo:thumbnail <" + image + ">,\n"
+        }
+    if (data.description)
+        rdfBody += "\tdbpedia-owl:yearOfConstruction \"" + linkedData.yearOfConstruction + "\",\n"
 
-    if(data.wikiDataLink)
-        rdfBody += "\towl:sameAs <" + data.wikiDataLink + ">\n."
+    if(linkedData.wikiDataLink)
+        rdfBody += "\towl:sameAs <" + linkedData.wikiDataLink.replace(new RegExp("page", ""), "resource") + ">\n."
 
     return rdfHeader + rdfBody
 }
