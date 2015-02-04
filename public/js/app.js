@@ -214,7 +214,7 @@ function showSnackbarMessage(m) {
 
   window.setTimeout(function() {
     snackBar.hide()
-  }, 5000)
+  }, 3500)
 }
 
 function onMapClick(e) {
