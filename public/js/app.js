@@ -121,23 +121,6 @@ L.control.settings = function (options) {
 function displayMonumentsOnMap(data) {
   monumentMarkers.clearLayers()
 
-  var minLatLng = [1000,1000]
-  var maxLatLng = [0, 0]
-
-  for (var i = data.length - 1; i >= 0; i--) {
-    if (minLatLng[0] > data[i].geolocation.coordinates[0] &&
-        minLatLng[1] > data[i].geolocation.coordinates[1]) {
-      minLatLng = data[i].geolocation.coordinates
-    }
-
-    if (maxLatLng[0] < data[i].geolocation.coordinates[0] &&
-        maxLatLng[1] < data[i].geolocation.coordinates[1]) {
-      maxLatLng = data[i].geolocation.coordinates
-    }
-  }
-
-  map.fitBounds([minLatLng, maxLatLng])
-
   data.forEach(function(monument, monumentIndex) {
     var marker = L.marker(monument.geolocation.coordinates, {
       title: monument.formatted,
@@ -196,11 +179,28 @@ function displayMonumentsOnMap(data) {
 }
 
 function preprocessSearchResults(data) {
-
   for (var i = data.length - 1; i >= 0; i--) {
     data[i].formatted = data[i].addresses[0].formatted
     data[i].geolocation = data[i].addresses[0].geolocation
   }
+
+
+  var minLatLng = [1000,1000]
+  var maxLatLng = [0, 0]
+
+  for (var i = data.length - 1; i >= 0; i--) {
+    if (minLatLng[0] > data[i].geolocation.coordinates[0] &&
+        minLatLng[1] > data[i].geolocation.coordinates[1]) {
+      minLatLng = data[i].geolocation.coordinates
+    }
+
+    if (maxLatLng[0] < data[i].geolocation.coordinates[0] &&
+        maxLatLng[1] < data[i].geolocation.coordinates[1]) {
+      maxLatLng = data[i].geolocation.coordinates
+    }
+  }
+
+  map.fitBounds([minLatLng, maxLatLng])
 
   searchResults = data
   displayMonumentsOnMap(data)
