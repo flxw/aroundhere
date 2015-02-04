@@ -119,8 +119,7 @@ var requests = {
             .find({_id: reqData.monumentId})
             .populate('addresses')
             .exec(function(err, docs){
-                console.log(err)
-                console.log(docs)
+                var data = {}
                 try {
                     for (var key in docs[0]) {
                         data[key] = docs[0][key]
@@ -129,46 +128,13 @@ var requests = {
                 }catch(err){
                     console.log("Error in Db-Answer: " + err)
                 }
-                if(reqData.type == 'rdf')
-                    data = rdf.creatRDF(data)
+                data = rdf.creatRDF(data)
                 callback(res, null, data)
             })
 
     },
 
     search: function(reqData, callback, res){
-        /*monumentSchema
-            .textSearch(reqData.query, function(err, output){
-            var formOut = []
-                for(var j= 0; j<output.results.length; j++ ){
-                    formOut.push(output.results[j].obj)
-                }
-            monumentSchema.populate(formOut, [{path: 'addresses'}], function(err, docs){
-                var formattedOutput = []
-                for(var i=0; i<docs.length ; i++){
-                    var currMonument = docs[i]
-                    var formattedObject = {}
-
-                    formattedObject.linkedData = currMonument.linkedData
-                    if(formattedObject.linkedData != "")
-                        formattedObject.linkedData = JSON.parse(formattedObject.linkedData)
-                    formattedObject.label = currMonument.label
-                    formattedObject.description = currMonument.description
-                    formattedObject.addresses = []
-                    for(var k=0; k<currMonument.addresses.length; k++) {
-                        var addressObject = {}
-                        addressObject.formatted = currMonument.addresses[k].formatted
-                        addressObject.geolocation = currMonument.addresses[k].geolocation
-                        formattedObject.addresses.push(addressObject)
-                    }
-
-                    formattedOutput.push(formattedObject)
-                }
-
-                callback(res, null, formattedOutput)
-            })
-            })*/
-
         monumentSchema
             .find(
                 {$text : { $search: reqData.query} }
