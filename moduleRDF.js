@@ -12,42 +12,51 @@ var rdfHeader =    "@prefix  rdf:           <http://www.w3.org/1999/02/22-rdf-sy
 var rdfBody = ""
 
 var createRDF = function(data) {
-    var linkedData = JSON.parse(data.linkedData)
+    var linkedData = {}
+    try {
+        var linkedData = JSON.parse(data.linkedData)
+    }catch(err){
+
+    }
 
     rdfBody = "<http://aroundhere.flxw.de/monument/" + data._id + ">\n"
     if (data.label)
-        rdfBody += "\trdfs:label \"" + data.label + "\",\n"
+        rdfBody += "\trdfs:label \"" + data.label + "\", \n"
     if (data.description)
-        rdfBody += "\tdcterms:description \"" + data.description + "\",\n"
+        rdfBody += "\tdcterms:description \"" + data.description + "\", \n"
     if (linkedData.link)
-        rdfBody += "\tdcterms:identifier <" + linkedData.link + ">,\n"
+        rdfBody += "\tdcterms:identifier <" + linkedData.link + ">, \n"
 
     if (linkedData.architects){
         rdfBody += "\tdbpedia-owl:architect [ \n"
         for (var j = 0; j < linkedData.architects.length; j++) {
-            rdfBody += "\t\t<" + linkedData.architects[j].url + ">,\n"
+            rdfBody += "\t\t<" + linkedData.architects[j].url + ">, \n"
         }
-        rdfBody += "\t ] ,\n"
+        rdfBody += "\t ] , \n"
     }
     if(data.addresses)
         data.addresses.forEach(function(address){
             console.log(address)
             rdfBody += "\tgeo:location [ \n"
-            rdfBody += "\t\ts:adress\t"+ address.formatted +",\n"
-            rdfBody += "\t\tgeo:lat \t" + address.geolocation.coordinates[0] + ",\n"
-            rdfBody += "\t\tgeo:long\t" + address.geolocation.coordinates[1] + ",\n"
-            rdfBody += "\t ] ,\n"
+            rdfBody += "\t\ts:adress\t"+ address.formatted +", \n"
+            rdfBody += "\t\tgeo:lat \t" + address.geolocation.coordinates[0] + ", \n"
+            rdfBody += "\t\tgeo:long\t" + address.geolocation.coordinates[1] + ", \n"
+            rdfBody += "\t ] , \n"
         })
     if(linkedData.images)
         for(var i=0; i<linkedData.images.length; i++){
             var image = linkedData.images[i]
-                rdfBody += "\tdbo:thumbnail <" + image + ">,\n"
+                rdfBody += "\tdbo:thumbnail <" + image + ">, \n"
         }
     if (data.description)
-        rdfBody += "\tdbpedia-owl:yearOfConstruction \"" + linkedData.yearOfConstruction + "\",\n"
+        rdfBody += "\tdbpedia-owl:yearOfConstruction \"" + linkedData.yearOfConstruction + "\", \n"
 
     if(linkedData.wikiDataLink)
-        rdfBody += "\towl:sameAs <" + linkedData.wikiDataLink.replace(new RegExp("page", ""), "resource") + ">\n."
+        rdfBody += "\towl:sameAs <" + linkedData.wikiDataLink.replace(new RegExp("page", ""), "resource") + ">\n"
+
+    rdfBody += "\t."
+    console.log(rdfBody)
+    rdfBody = rdfBody.replace(/,.[\s\n]*\.{1}/, ".")
 
     return rdfHeader + rdfBody
 }
