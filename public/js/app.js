@@ -6,7 +6,7 @@ L.Control.Filter = L.Control.extend({
     position: 'bottomright',
     icon: 'fa fa-filter',
     strings: {
-      title: 'Filter the results'
+      title: 'Suchergebnisse filtern'
     },
   },
 
@@ -219,7 +219,7 @@ function showSnackbarMessage(m) {
 
 function onMapClick(e) {
   var popupCoordinates = e.latlng
-  var popupContent = $('<div><p>Looking up nearby monuments...</p></div>')
+  var popupContent = $('<div><p>Suche...</p></div>')
 
   searchInput.val('')
 
@@ -238,12 +238,12 @@ function onMapClick(e) {
     context: null,
     success: function(data) {
       searchResults = data
-      popupContent.find('p').text(data.length + ' monuments around here')
+      popupContent.find('p').text(data.length + ' Denkmäler gefunden')
       setupFiltersWith(data)
       displayMonumentsOnMap(data)
     },
     error: function(e) {
-      showSnackbarMessage('The server does not answer')
+      showSnackbarMessage('Keine Antwort vom Server :(')
     }
   })
 
@@ -389,7 +389,7 @@ L.control.locate({
   },
   onLocationError: function(err) {
     map.setView([52.514034, 13.405692], 15)
-    showSnackbarMessage('Unable to determine your location')
+    showSnackbarMessage('Die aktuelle Position konnte nicht bestimmt werden :(')
   }
 }).addTo(map).start()
 filterControl.addTo(map)
@@ -436,7 +436,7 @@ $('#searchButton').click(function(event) {
     context: null,
     success: preprocessSearchResults,
     error: function(e) {
-      showSnackbarMessage('The server does not answer')
+      showSnackbarMessage('Der Server antwortet nicht :(')
     }
   })
 })
