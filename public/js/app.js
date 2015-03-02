@@ -139,7 +139,7 @@ function displayMonumentsOnMap(data) {
     var popContent = $('<div></div>')
 
     if (monument.linkedData) {
-      popContent.append('<h3>#' + monument.linkedData.monumentId + '</h3>')
+      popContent.append('<h3>Denkmal #' + monument.linkedData.monumentId + '</h3>')
     } else {
       popContent.append('<h3>' + monument.formatted + '</h3>')
     }
@@ -150,7 +150,7 @@ function displayMonumentsOnMap(data) {
 
     if (monument.linkedData) {
       if (monument.linkedData.yearOfConstruction) {
-        popContent.append($('<p>Built in ' + monument.linkedData.yearOfConstruction + '</p>'))
+        popContent.append($('<p><b>Baujahr: </b>' + monument.linkedData.yearOfConstruction + '</p>'))
       }
 
       if (monument.linkedData.link) {
