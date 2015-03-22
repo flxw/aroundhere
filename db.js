@@ -50,7 +50,7 @@ var requests = {
                     var update = monument.belongsToMonument.lastUpdate == "" ||
                         (new Date(Date.now()).getTime() - monument.belongsToMonument.lastUpdate) /  (1000*3600*24) > 14
                     //Dont update the same id more than one time at once
-                    if(!(updatedIds.indexOf(monument.belongsToMonument._id) > -1) ){//&& update) {
+                    if(!(updatedIds.indexOf(monument.belongsToMonument._id) > -1) && update) {
                         console.log("Update Monument with id: " + monument.belongsToMonument._id)
                         updatedIds.push(monument.belongsToMonument._id)
                         linkData.linkData(monument.belongsToMonument._id, function (data) {
@@ -130,6 +130,50 @@ var requests = {
                 }
                 data = rdf.creatRDF(data)
                 callback(res, null, data)
+
+                var monument = docs[0]
+                console.log(monument)
+                var update = monument.lastUpdate == "" ||
+                    (new Date(Date.now()).getTime() - monument.lastUpdate) /  (1000*3600*24) > 14
+                //Dont update the same id more than one time at once
+                if(update) {
+                    console.log("Update Monument with id: " + monument._id)
+                    updatedIds.push(monument._id)
+                    linkData.linkData(monument._id, function (data) {
+                        var count = 0
+                        for (var key in data) {
+                            count++
+                        }
+                        if (count > 0) {
+
+                            var date = new Date(Date.now()).getTime() + ""
+                            db.monuments.update({_id: data.monumentId}, {
+                                $set: {
+                                    linkedData: JSON.stringify(data),
+                                    lastUpdate: date
+                                }
+                            }, function (err, updated) {
+                                if (err || !updated) console.log(err);
+                                console.log("\t" + data.monumentId + " monument updated")
+                                var index = updatedIds.indexOf(data.monumentId)
+                                updatedIds.splice(index, 1)
+                            })
+                            if (data.description) {
+                                db.monuments.update({_id: data.monumentId}, {$set: {description: data.description}}, function (err, updated) {
+                                    if (err || !updated) console.log(err);
+                                })
+                            }
+
+                            if (data.label) {
+                                db.monuments.update({_id: data.monumentId}, {$set: {label: data.label}}, function (err, updated) {
+                                    if (err || !updated) console.log(err);
+                                })
+                            }
+
+                        }
+
+                    })
+                }
             })
 
     },
