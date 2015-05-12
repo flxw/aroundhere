@@ -1,4 +1,4 @@
-# Installation
+#  Installation
 
 Required are:
  *  `npm`, the node.js package manager
